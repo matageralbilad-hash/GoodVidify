@@ -67,16 +67,34 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
 .info-card { display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid var(--border-glass); }
 .info-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(255, 184, 0, 0.1); display: grid; place-items: center; font-size: 24px; color: var(--gold-primary); }
 
-/* === تصميم قسم الباقات (Pricing) === */
-.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-.price-card { padding: 30px; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; display: flex; flex-direction: column; }
+/* === تصميم قسم الباقات (Pricing) مع مفتاح التبديل === */
+.pricing-toggle { display: flex; justify-content: center; margin-bottom: 40px; }
+.toggle-bg { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 999px; padding: 6px; display: inline-flex; position: relative; }
+.toggle-btn { padding: 12px 32px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--text-muted); cursor: pointer; border: none; background: transparent; font-family: inherit; transition: 0.3s; z-index: 1; }
+.toggle-btn.active { color: #000; }
+.toggle-slider { position: absolute; top: 6px; bottom: 6px; width: calc(50% - 6px); background: var(--gradient-gold); border-radius: 999px; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 0; }
+html[dir="rtl"] .toggle-slider.gen-active { inset-inline-start: 6px; }
+html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 6px; }
+
+.pricing-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; animation: fadeIn 0.5s ease-in-out; }
+.pricing-grid.active { display: grid; }
+
+.price-card { padding: 30px; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; display: flex; flex-direction: column; position: relative; }
+.price-card.popular { border-color: var(--violet-light); box-shadow: 0 0 20px rgba(124,58,237,0.15); transform: scale(1.02); }
+.price-badge { position: absolute; top: -14px; inset-inline-end: 20px; background: var(--gradient-violet); padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; color: white; }
+
 .price-card h3 { margin: 0; color: var(--gold-light); font-size: 20px; }
-.price-card .price { font-size: 40px; font-weight: 900; margin: 15px 0; }
-.price-card ul { list-style: none; padding: 0; margin: 0 0 20px; flex-grow: 1; }
-.price-card ul li { margin-bottom: 12px; color: var(--text-muted); font-size: 14px; display: flex; align-items: flex-start; gap: 8px; }
+.price-card .price { font-size: 36px; font-weight: 900; margin: 15px 0; display: flex; align-items: baseline; gap: 5px; }
+.price-card .price span { font-size: 14px; color: var(--text-muted); font-weight: normal; }
+
+.price-card ul { list-style: none; padding: 0; margin: 0 0 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; }
+.price-card ul li { color: var(--text-muted); font-size: 14px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
 .price-card ul li::before { content: '✓'; color: var(--gold-primary); font-weight: 900; }
-.btn-buy { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-glass); text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; transition: 0.3s; }
-.btn-buy:hover { background: var(--gradient-gold); color: #000; border-color: transparent; }
+
+.btn-buy { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-glass); text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; transition: 0.3s; margin-top: auto; display: block; cursor: pointer; }
+.btn-buy:hover { background: rgba(255,255,255,0.1); }
+.btn-buy.primary { background: var(--gradient-violet); border: none; box-shadow: var(--glow-violet); }
+.btn-buy.primary:hover { transform: translateY(-2px); }
 
 /* رسائل البناء للرئيسية والاستخدام */
 .construction-box { text-align: center; padding: 100px 20px; color: var(--text-muted); }
@@ -94,9 +112,9 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
   <div class="nav-menu">
     <button class="nav-btn" onclick="openTab('tab-home', this)">🏠 الرئيسية</button>
     <button class="nav-btn" onclick="openTab('tab-usage', this)">📊 الاستخدام</button>
-    <!-- تم جعل قسم الاستفسارات هو النشط افتراضياً الآن لرؤيته -->
-    <button class="nav-btn active" onclick="openTab('tab-support', this)">💬 الاستفسارات</button>
-    <button class="nav-btn" onclick="openTab('tab-pricing', this)">💳 الباقات والشراء</button>
+    <button class="nav-btn" onclick="openTab('tab-support', this)">💬 الاستفسارات</button>
+    <!-- تم جعل قسم الباقات هو النشط افتراضياً الآن لرؤيته -->
+    <button class="nav-btn active" onclick="openTab('tab-pricing', this)">💳 الباقات والشراء</button>
   </div>
 
   <div class="user-info">
@@ -126,15 +144,14 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
     </div>
   </div>
 
-  <!-- 3. الاستفسارات والاتصال (جاهز) -->
-  <div id="tab-support" class="tab-content active">
+  <!-- 3. الاستفسارات والاتصال -->
+  <div id="tab-support" class="tab-content">
     <div class="page-header">
       <h2>الاستفسارات والدعم الفني</h2>
       <p>نحن هنا لمساعدتك. أرسل استفسارك وسيقوم فريقنا بالرد عليك في أسرع وقت.</p>
     </div>
     
     <div class="support-container">
-      <!-- نموذج المراسلة -->
       <div class="glass-box">
         <div class="form-group">
           <label>نوع الاستفسار</label>
@@ -156,7 +173,6 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
         <button class="btn-submit">إرسال التذكرة ✦</button>
       </div>
 
-      <!-- معلومات الاتصال -->
       <div class="contact-info">
         <div class="info-card">
           <div class="info-icon">📧</div>
@@ -176,53 +192,114 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
     </div>
   </div>
 
-  <!-- 4. الباقات والشراء (جاهز مع توجيه لـ cash.html) -->
-  <div id="tab-pricing" class="tab-content">
+  <!-- 4. الباقات والشراء (نشط افتراضياً الآن) -->
+  <div id="tab-pricing" class="tab-content active">
     <div class="page-header">
       <h2>ترقية الباقة</h2>
       <p>اشحن رصيد دقائقك وانطلق في صناعة محتوى احترافي بلا حدود.</p>
     </div>
 
-    <div class="pricing-grid">
-      <!-- باقة أساسية -->
-      <div class="price-card">
-        <h3>الأساسية</h3>
-        <div class="price">$30</div>
-        <ul>
-          <li>رصيد 5 دقائق (مقسمة بمرونة)</li>
-          <li>دقة 1080p عالية</li>
-          <li>دعم كافة الأسئلة التفاعلية</li>
-        </ul>
-        <!-- التوجيه لصفحة الكاش -->
-        <a href="cash.html" class="btn-buy">شراء الآن</a>
-      </div>
-
-      <!-- باقة برو -->
-      <div class="price-card" style="border-color: var(--violet-light); box-shadow: 0 0 20px rgba(124,58,237,0.2);">
-        <h3>برو (المميزة)</h3>
-        <div class="price">$80</div>
-        <ul>
-          <li>رصيد 20 دقيقة (مقسمة بمرونة)</li>
-          <li>دقة 4K سينمائية</li>
-          <li>بدون علامة مائية</li>
-        </ul>
-        <!-- التوجيه لصفحة الكاش -->
-        <a href="cash.html" class="btn-buy" style="background: var(--gradient-violet); border:none;">شراء الآن ✦</a>
-      </div>
-
-      <!-- صانع المحتوى -->
-      <div class="price-card">
-        <h3>صانع المحتوى (وثائقي)</h3>
-        <div class="price">$50</div>
-        <ul>
-          <li>رصيد 100 دقيقة</li>
-          <li>صوت فصيح وترجمة تلقائية</li>
-          <li>مقاطع B-Roll عالية الجودة</li>
-        </ul>
-        <!-- التوجيه لصفحة الكاش -->
-        <a href="cash.html" class="btn-buy">شراء الآن</a>
+    <!-- Pricing Toggle -->
+    <div class="pricing-toggle">
+      <div class="toggle-bg">
+        <div class="toggle-slider gen-active" id="dash-toggle-slider"></div>
+        <button class="toggle-btn active" onclick="switchDashPricing('gen')" id="dash-btn-gen">قسم التوليد الخيالي 🐉</button>
+        <button class="toggle-btn" onclick="switchDashPricing('auto')" id="dash-btn-auto">قسم المونتاج 🎬</button>
       </div>
     </div>
+
+    <!-- 1. قسم التوليد الخيالي -->
+    <div class="pricing-grid active" id="dash-grid-gen">
+      <div class="price-card">
+        <h3>التجريبية</h3>
+        <div class="price">مجاناً</div>
+        <ul>
+          <li>رصيد نصف دقيقة (30 ثانية)</li>
+          <li>دقة 720p الأساسية</li>
+          <li>علامة GoodVidify مائية بارزة</li>
+          <li>مثالية لتجربة قوة المخرج الذكي</li>
+        </ul>
+        <a href="cash.html" class="btn-buy">جرب الآن</a>
+      </div>
+
+      <div class="price-card">
+        <h3>الأساسية</h3>
+        <div class="price">$30 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 5 دقائق (مقسمة كما تشاء)</li>
+          <li>دقة 1080p عالية</li>
+          <li>علامة مائية مصغرة جداً</li>
+          <li>دعم كافة الأسئلة التفاعلية</li>
+        </ul>
+        <a href="cash.html" class="btn-buy">اشترك الآن</a>
+      </div>
+
+      <div class="price-card popular">
+        <div class="price-badge">المميزة</div>
+        <h3>برو (Pro)</h3>
+        <div class="price">$80 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 20 دقيقة (مقسمة كما تشاء)</li>
+          <li>دقة 4K سينمائية</li>
+          <li>بدون أي علامة مائية نهائياً</li>
+          <li>توليد أسرع + حقوق تجارية كاملة</li>
+        </ul>
+        <a href="cash.html" class="btn-buy primary">اشترك الآن</a>
+      </div>
+
+      <div class="price-card">
+        <h3>برو ماكس</h3>
+        <div class="price">$320 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 50 دقيقة (مقسمة كما تشاء)</li>
+          <li>أقصى جودة وعدسات كاميرا متقدمة</li>
+          <li>بدون علامة مائية</li>
+          <li>مخصص للشركات والاستوديوهات الكبرى</li>
+        </ul>
+        <a href="cash.html" class="btn-buy">اشترك الآن</a>
+      </div>
+    </div>
+
+    <!-- 2. قسم المونتاج -->
+    <div class="pricing-grid" id="dash-grid-auto">
+      <div class="price-card">
+        <h3>صانع المحتوى</h3>
+        <div class="price">$50 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 100 دقيقة شهرياً</li>
+          <li>إنشاء حتى 10 فيديوهات (حد أقصى 10 دقائق للفيديو)</li>
+          <li>صوت فصيح + ترجمة تلقائية</li>
+          <li>مقاطع B-Roll عالية الجودة</li>
+        </ul>
+        <a href="cash.html" class="btn-buy">اشترك الآن</a>
+      </div>
+
+      <div class="price-card popular">
+        <div class="price-badge">الأكثر توفيراً</div>
+        <h3>القناة الاحترافية</h3>
+        <div class="price">$100 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 750 دقيقة شهرياً</li>
+          <li>إنشاء حتى 30 فيديو (حد أقصى 25 دقيقة للفيديو)</li>
+          <li>بدون علامات مائية</li>
+          <li>رندر سريع وأصوات مميزة</li>
+        </ul>
+        <a href="cash.html" class="btn-buy primary">اشترك الآن</a>
+      </div>
+
+      <div class="price-card">
+        <h3>بورماكس الوثائقي</h3>
+        <div class="price">$300 <span>/ شهرياً</span></div>
+        <ul>
+          <li>رصيد 2000 دقيقة شهرياً</li>
+          <li>إنشاء حتى 40 فيديو (حد أقصى 60 دقيقة)</li>
+          <li>مثالي لقنوات الوثائقيات الطويلة جداً</li>
+          <li>أولوية قصوى في سيرفرات الدمج</li>
+        </ul>
+        <a href="cash.html" class="btn-buy">اشترك الآن</a>
+      </div>
+    </div>
+
   </div>
 
 </main>
@@ -230,17 +307,39 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
 <!-- نظام التبويبات (Tabs Logic) -->
 <script>
   function openTab(tabId, btnElement) {
-    // إخفاء كل المحتوى
     document.querySelectorAll('.tab-content').forEach(tab => {
       tab.classList.remove('active');
     });
-    // إزالة التفعيل من كل الأزرار
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.classList.remove('active');
     });
-    // إظهار المحتوى المطلوب وتفعيل الزر
     document.getElementById(tabId).classList.add('active');
     btnElement.classList.add('active');
+  }
+
+  // نظام تبديل الباقات (Toggle) داخل الداش بورد
+  function switchDashPricing(type) {
+    const btnGen = document.getElementById('dash-btn-gen');
+    const btnAuto = document.getElementById('dash-btn-auto');
+    const slider = document.getElementById('dash-toggle-slider');
+    const gridGen = document.getElementById('dash-grid-gen');
+    const gridAuto = document.getElementById('dash-grid-auto');
+    
+    btnGen.classList.remove('active');
+    btnAuto.classList.remove('active');
+    slider.classList.remove('gen-active', 'auto-active');
+    
+    if(type === 'gen') {
+      btnGen.classList.add('active');
+      slider.classList.add('gen-active');
+      gridAuto.classList.remove('active');
+      setTimeout(() => gridGen.classList.add('active'), 50);
+    } else {
+      btnAuto.classList.add('active');
+      slider.classList.add('auto-active');
+      gridGen.classList.remove('active');
+      setTimeout(() => gridAuto.classList.add('active'), 50);
+    }
   }
 </script>
 
@@ -262,18 +361,14 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // التحقق من حالة المستخدم (Security Check)
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // المستخدم مسجل دخول، اعرض بريده الإلكتروني في الشريط الجانبي
       document.getElementById('user-email').innerText = user.email;
     } else {
-      // المستخدم غير مسجل دخول (أو تم طرده)، أعد توجيهه فوراً لصفحة الدخول
       window.location.href = "login.html";
     }
   });
 
-  // برمجة زر تسجيل الخروج
   document.getElementById('btn-logout').addEventListener('click', () => {
     signOut(auth).then(() => {
       window.location.href = "login.html";
