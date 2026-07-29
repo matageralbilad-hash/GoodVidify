@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — الدفع الآمن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #090a0f;
+  --bg-card: rgba(18, 20, 29, 0.7);
+  --gold-primary: #FFB800;
+  --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --glow-gold: 0 0 40px -10px rgba(255, 184, 0, 0.3);
+  --glow-violet: 0 0 40px -10px rgba(124, 58, 237, 0.3);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; padding: 20px; }
+a { text-decoration: none; color: inherit; }
+
+/* تأثيرات الخلفية */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.15; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 50px 50px; mask-image: radial-gradient(ellipse at 50% 50%, #000, transparent 70%); }
+.orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3; }
+.orb-gold { width: 40vw; height: 40vw; top: -10%; right: -10%; background: radial-gradient(circle, var(--gold-primary), transparent 70%); }
+.orb-violet { width: 50vw; height: 50vw; bottom: -10%; left: -10%; background: radial-gradient(circle, var(--violet-neon), transparent 70%); }
+
+/* الحاوية الرئيسية */
+.checkout-container { width: 100%; max-width: 1000px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; animation: slideUp 0.6s ease-out forwards; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+/* الزجاجيات */
+.glass-box { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+
+/* ملخص الطلب (اليمين) */
+.order-summary { position: relative; }
+.brand { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 900; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+.brand b { background: linear-gradient(135deg, #FFD700, #FFB800); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.summary-item { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 16px; color: var(--text-muted); }
+.summary-item span:last-child { color: var(--text-main); font-weight: 700; font-family: 'Poppins', sans-serif; }
+.divider { height: 1px; background: var(--border-glass); margin: 20px 0; }
+.total-price { display: flex; justify-content: space-between; align-items: center; font-size: 24px; font-weight: 900; color: var(--gold-primary); margin-top: 10px; }
+
+/* نموذج الدفع (اليسار) */
+.payment-form h2 { margin: 0 0 30px; font-size: 24px; }
+.form-group { margin-bottom: 24px; }
+.form-group label { display: block; margin-bottom: 10px; font-size: 13px; color: var(--text-muted); font-weight: 700; }
+.input-wrapper { position: relative; }
+.input-wrapper input { width: 100%; padding: 16px; padding-inline-start: 45px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; color: #fff; font-family: 'Poppins', sans-serif; font-size: 15px; letter-spacing: 1px; transition: 0.3s; }
+.input-wrapper input:focus { outline: none; border-color: var(--violet-light); box-shadow: inset 0 0 10px rgba(124,58,237,0.2); }
+.input-icon { position: absolute; top: 50%; transform: translateY(-50%); inset-inline-start: 15px; color: var(--text-muted); font-size: 18px; }
+
+.row-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.btn-pay { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--violet-light), var(--violet-neon)); color: #fff; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.3s; font-family: 'Tajawal', sans-serif; margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: var(--glow-violet); }
+.btn-pay:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5); }
+.btn-pay:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* حالة التحميل والنجاح */
+.spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.success-overlay { position: absolute; inset: 0; background: var(--bg-card); border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; opacity: 0; pointer-events: none; transition: 0.4s; z-index: 10; backdrop-filter: blur(20px); }
+.success-overlay.active { opacity: 1; pointer-events: auto; }
+.success-icon { width: 80px; height: 80px; background: rgba(37, 211, 102, 0.1); border: 2px solid #25D366; color: #25D366; border-radius: 50%; display: grid; place-items: center; font-size: 40px; margin-bottom: 20px; }
+
+.btn-back { display: inline-block; margin-top: 30px; color: var(--text-muted); font-size: 14px; transition: 0.3s; }
+.btn-back:hover { color: #fff; }
+
+/* تجاوب الشاشات (الهاتف) */
+@media(max-width: 900px) {
+  .checkout-container { grid-template-columns: 1fr; gap: 20px; }
+  .order-summary { order: 2; }
+  .payment-form { order: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="grid-bg"></div>
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-violet"></div>
+</div>
+
+<div class="checkout-container">
+  
+  <!-- ملخص الطلب -->
+  <div class="glass-box order-summary">
+    <div class="brand">Good<b>Vidify</b></div>
+    <h3 style="margin-top:0;">ملخص الطلب</h3>
+    
+    <div class="summary-item">
+      <span>الباقة المختارة</span>
+      <span>برو (المميزة)</span>
+    </div>
+    <div class="summary-item">
+      <span>الرصيد</span>
+      <span>20 دقيقة (4K)</span>
+    </div>
+    <div class="summary-item">
+      <span>تاريخ التجديد القادم</span>
+      <span id="next-date">29 أغسطس 2026</span>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="summary-item">
+      <span>السعر الفرعي</span>
+      <span>$80.00</span>
+    </div>
+    <div class="summary-item">
+      <span>الضرائب (0%)</span>
+      <span>$0.00</span>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="total-price">
+      <span>الإجمالي</span>
+      <span>$80.00</span>
+    </div>
+
+    <a href="packages.html" class="btn-back">← العودة لتغيير الباقة</a>
+  </div>
+
+  <!-- نموذج الدفع -->
+  <div class="glass-box payment-form">
+    <div class="success-overlay" id="success-overlay">
+      <div class="success-icon">✓</div>
+      <h2>تمت عملية الدفع بنجاح!</h2>
+      <p style="color: var(--text-muted);">تمت إضافة 20 دقيقة إلى رصيدك. سيتم تحويلك للاستوديو الآن...</p>
+    </div>
+
+    <h2>تفاصيل الدفع الآمن 🔒</h2>
+    
+    <div class="form-group">
+      <label>الاسم على البطاقة</label>
+      <div class="input-wrapper">
+        <span class="input-icon">👤</span>
+        <input type="text" placeholder="ALI AL-SAQQAF" required id="card-name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>رقم البطاقة</label>
+      <div class="input-wrapper">
+        <span class="input-icon">💳</span>
+        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" required id="card-number">
+      </div>
+    </div>
+
+    <div class="row-inputs">
+      <div class="form-group">
+        <label>تاريخ الانتهاء</label>
+        <div class="input-wrapper">
+          <span class="input-icon">📅</span>
+          <input type="text" placeholder="MM/YY" maxlength="5" required id="card-expiry">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>رمز الأمان (CVC)</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" placeholder="123" maxlength="3" required id="card-cvc">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-pay" id="btn-pay">
+      <span id="pay-text">دفع $80.00 الآن</span>
+      <div class="spinner" id="pay-spinner"></div>
+    </button>
+    <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 15px;">نحن نستخدم تشفير 256-bit آمن للحفاظ على بياناتك.</p>
+  </div>
+
+</div>
+
+<script>
+  // تنسيق مسافات رقم البطاقة
+  document.getElementById('card-number').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+  });
+
+  // تنسيق تاريخ الانتهاء
+  document.getElementById('card-expiry').addEventListener('input', function (e) {
+    let val = e.target.value.replace(/[^\d]/g, '');
+    if(val.length > 2) val = val.substring(0,2) + '/' + val.substring(2,4);
+    e.target.value = val;
+  });
+
+  // محاكاة عملية الدفع
+  document.getElementById('btn-pay').addEventListener('click', function() {
+    const name = document.getElementById('card-name').value;
+    const number = document.getElementById('card-number').value;
+    const expiry = document.getElementById('card-expiry').value;
+    const cvc = document.getElementById('card-cvc').value;
+
+    if(!name || number.length < 16 || expiry.length < 5 || cvc.length < 3) {
+      alert("يرجى إكمال بيانات البطاقة بشكل صحيح.");
+      return;
+    }
+
+    const btn = this;
+    const text = document.getElementById('pay-text');
+    const spinner = document.getElementById('pay-spinner');
+    
+    // بدء حالة التحميل
+    btn.disabled = true;
+    text.innerText = "جاري معالجة الدفع...";
+    spinner.style.display = "block";
+
+    // محاكاة الاتصال بالبنك (3 ثواني)
+    setTimeout(() => {
+      document.getElementById('success-overlay').classList.add('active');
+      
+      // التوجيه للوحة التحكم بعد 3 ثواني من النجاح
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 3000);
+      
+    }, 2500);
+  });
+</script>
+
+<!-- ربط Firebase للتحقق من الدخول (اختياري لكن مفضل أمنياً) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
+    authDomain: "scroli.firebaseapp.com",
+    databaseURL: "https://scroli-default-rtdb.firebaseio.com",
+    projectId: "scroli",
+    storageBucket: "scroli.firebasestorage.app",
+    messagingSenderId: "839815358569",
+    appId: "1:839815358569:web:f62062770c11c7eb2ddaf8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html"; // طرد غير المسجلين
+    }
+  });
+</script>
+
+</body>
+</html>
