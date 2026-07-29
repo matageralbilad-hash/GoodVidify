@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — ترقية الباقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #090a0f;
+  --bg-card: rgba(18, 20, 29, 0.6);
+  --bg-card-hover: rgba(25, 28, 40, 0.8);
+  --gold-primary: #FFB800;
+  --gold-light: #FFD700;
+  --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --glow-gold: 0 0 40px -10px rgba(255, 184, 0, 0.4);
+  --glow-violet: 0 0 50px -5px rgba(124, 58, 237, 0.5);
+}
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; height: 100vh; overflow: hidden; }
+a { text-decoration: none; color: inherit; }
+
+/* === الخلفية والتأثيرات === */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
+
+/* === الشريط الجانبي === */
+aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; }
+.brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
+.brand b { background: linear-gradient(135deg, var(--gold-light), var(--gold-primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.nav-menu { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); text-align: start; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+.nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: var(--violet-light); box-shadow: inset 0 0 20px rgba(124, 58, 237, 0.05); }
+
+/* === المحتوى الرئيسي === */
+main { flex-grow: 1; padding: 40px; overflow-y: auto; }
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header h2 { margin: 0 0 10px; font-size: 34px; font-weight: 900; }
+.page-header p { margin: 0; color: var(--text-muted); font-size: 16px; }
+
+/* === مفتاح التبديل (التوليد / المونتاج) === */
+.pricing-toggle { display: flex; justify-content: center; margin-bottom: 50px; }
+.toggle-bg { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 999px; padding: 8px; display: inline-flex; position: relative; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); }
+.toggle-btn { padding: 14px 36px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--text-muted); cursor: pointer; border: none; background: transparent; font-family: inherit; transition: color 0.3s; z-index: 1; }
+.toggle-btn.active { color: #000; }
+.toggle-slider { position: absolute; top: 8px; bottom: 8px; width: calc(50% - 8px); background: linear-gradient(135deg, var(--gold-light), var(--gold-primary)); border-radius: 999px; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 0; box-shadow: var(--glow-gold); }
+html[dir="rtl"] .toggle-slider.gen-active { inset-inline-start: 8px; }
+html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
+
+/* === شبكة الباقات === */
+.pricing-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; animation: fadeInUp 0.6s ease-out forwards; align-items: center; }
+.pricing-grid.active { display: grid; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* بطاقة الباقة */
+.price-card { padding: 40px 30px; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 24px; display: flex; flex-direction: column; position: relative; transition: 0.4s; backdrop-filter: blur(10px); }
+.price-card:hover { background: var(--bg-card-hover); transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.15); }
+
+/* تمييز الباقة الاحترافية (تشجيع الشراء) */
+.price-card.popular { border-color: var(--violet-light); box-shadow: var(--glow-violet); transform: scale(1.05); z-index: 2; background: linear-gradient(180deg, rgba(18, 20, 29, 0.9), rgba(124, 58, 237, 0.05)); }
+.price-card.popular:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 0 60px -5px rgba(124, 58, 237, 0.7); }
+.price-badge { position: absolute; top: -16px; inset-inline-start: 50%; transform: translateX(50%); background: linear-gradient(135deg, var(--violet-light), var(--violet-neon)); padding: 8px 24px; border-radius: 999px; font-size: 13px; font-weight: 900; color: white; letter-spacing: 1px; box-shadow: 0 5px 15px rgba(124,58,237,0.4); white-space: nowrap; }
+
+/* نصوص الباقة */
+.price-card h3 { margin: 0; color: var(--gold-light); font-size: 22px; }
+.price-card .price { font-size: 46px; font-weight: 900; margin: 20px 0; display: flex; align-items: baseline; gap: 5px; color: #fff; }
+.price-card .price span { font-size: 15px; color: var(--text-muted); font-weight: normal; }
+
+.price-card ul { list-style: none; padding: 0; margin: 0 0 30px; flex-grow: 1; display: flex; flex-direction: column; gap: 16px; }
+.price-card ul li { color: var(--text-main); font-size: 15px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.price-card ul li::before { content: '✔'; color: var(--gold-primary); font-weight: 900; font-size: 16px; }
+
+/* أزرار الشراء الموجهة للكاش */
+.btn-buy { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-glass); text-align: center; padding: 16px; border-radius: 14px; font-weight: 900; font-size: 16px; transition: 0.3s; margin-top: auto; display: block; cursor: pointer; }
+.btn-buy:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+.btn-buy.primary { background: linear-gradient(135deg, var(--violet-light), var(--violet-neon)); border: none; box-shadow: 0 10px 20px rgba(124,58,237,0.3); }
+.btn-buy.primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(124,58,237,0.5); }
+</style>
+</head>
+<body>
+
+<div class="bg-effects"><div class="grid-bg"></div></div>
+
+<aside>
+  <div class="brand">Good<b>Vidify</b></div>
+  <div class="nav-menu">
+    <a href="dashboard.html" class="nav-btn">🏠 الرئيسية</a>
+    <a href="dashboard.html" class="nav-btn">📊 الاستخدام</a>
+    <a href="dashboard.html" class="nav-btn">💬 الاستفسارات</a>
+    <a href="Notifications.html" class="nav-btn">🔔 الإشعارات</a>
+    <a href="packages.html" class="nav-btn active">💳 الباقات والشراء</a>
+  </div>
+</aside>
+
+<main>
+  <div class="page-header">
+    <h2>استثمر في إبداعك 🚀</h2>
+    <p>اختر الباقة التي تناسب طموحك، واصنع فيديوهات احترافية بدون حدود.</p>
+  </div>
+
+  <div class="pricing-toggle">
+    <div class="toggle-bg">
+      <div class="toggle-slider gen-active" id="dash-toggle-slider"></div>
+      <button class="toggle-btn active" onclick="switchDashPricing('gen')" id="dash-btn-gen">قسم التوليد الخيالي 🐉</button>
+      <button class="toggle-btn" onclick="switchDashPricing('auto')" id="dash-btn-auto">قسم المونتاج الوثائقي 🎬</button>
+    </div>
+  </div>
+
+  <!-- 1. قسم التوليد الخيالي -->
+  <div class="pricing-grid active" id="dash-grid-gen">
+    <!-- الباقة التجريبية -->
+    <div class="price-card">
+      <h3>التجريبية</h3>
+      <div class="price">مجاناً</div>
+      <ul>
+        <li>رصيد نصف دقيقة (30 ثانية)</li>
+        <li>دقة 720p الأساسية</li>
+        <li>علامة GoodVidify مائية بارزة</li>
+        <li>مثالية لتجربة قوة المخرج الذكي</li>
+      </ul>
+      <a href="cash.html?plan=free_gen&price=0" class="btn-buy">جرب الآن</a>
+    </div>
+
+    <!-- الباقة الأساسية -->
+    <div class="price-card">
+      <h3>الأساسية</h3>
+      <div class="price">$30 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 5 دقائق (مقسمة كما تشاء)</li>
+        <li>دقة 1080p عالية</li>
+        <li>علامة مائية مصغرة جداً</li>
+        <li>دعم كافة الأسئلة التفاعلية</li>
+      </ul>
+      <a href="cash.html?plan=basic_gen&price=30" class="btn-buy">اشترك الآن</a>
+    </div>
+
+    <!-- باقة برو (المميزة بصرياً) -->
+    <div class="price-card popular">
+      <div class="price-badge">الأكثر اختياراً 🔥</div>
+      <h3>برو (Pro)</h3>
+      <div class="price">$80 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 20 دقيقة (مقسمة كما تشاء)</li>
+        <li>دقة 4K سينمائية</li>
+        <li>بدون أي علامة مائية نهائياً</li>
+        <li>توليد أسرع + حقوق تجارية كاملة</li>
+      </ul>
+      <a href="cash.html?plan=pro_gen&price=80" class="btn-buy primary">اشترك الآن ✦</a>
+    </div>
+
+    <!-- باقة برو ماكس -->
+    <div class="price-card">
+      <h3>برو ماكس</h3>
+      <div class="price">$320 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 50 دقيقة (مقسمة كما تشاء)</li>
+        <li>أقصى جودة وعدسات كاميرا متقدمة</li>
+        <li>بدون علامة مائية</li>
+        <li>مخصص للشركات والاستوديوهات الكبرى</li>
+      </ul>
+      <a href="cash.html?plan=max_gen&price=320" class="btn-buy">اشترك الآن</a>
+    </div>
+  </div>
+
+  <!-- 2. قسم المونتاج الوثائقي -->
+  <div class="pricing-grid" id="dash-grid-auto">
+    <!-- صانع المحتوى -->
+    <div class="price-card">
+      <h3>صانع المحتوى</h3>
+      <div class="price">$50 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 100 دقيقة شهرياً</li>
+        <li>إنشاء حتى 10 فيديوهات (حد أقصى 10 دقائق للفيديو)</li>
+        <li>صوت فصيح + ترجمة تلقائية</li>
+        <li>مقاطع B-Roll عالية الجودة</li>
+      </ul>
+      <a href="cash.html?plan=creator_auto&price=50" class="btn-buy">اشترك الآن</a>
+    </div>
+
+    <!-- القناة الاحترافية (المميزة بصرياً) -->
+    <div class="price-card popular">
+      <div class="price-badge">الأكثر توفيراً 💎</div>
+      <h3>القناة الاحترافية</h3>
+      <div class="price">$100 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 750 دقيقة شهرياً</li>
+        <li>إنشاء حتى 30 فيديو (حد أقصى 25 دقيقة للفيديو)</li>
+        <li>بدون علامات مائية</li>
+        <li>رندر سريع وأصوات مميزة</li>
+      </ul>
+      <a href="cash.html?plan=pro_auto&price=100" class="btn-buy primary">اشترك الآن ✦</a>
+    </div>
+
+    <!-- بورماكس الوثائقي -->
+    <div class="price-card">
+      <h3>بورماكس الوثائقي</h3>
+      <div class="price">$300 <span>/ شهرياً</span></div>
+      <ul>
+        <li>رصيد 2000 دقيقة شهرياً</li>
+        <li>إنشاء حتى 40 فيديو (حد أقصى 60 دقيقة)</li>
+        <li>مثالي لقنوات الوثائقيات الطويلة جداً</li>
+        <li>أولوية قصوى في سيرفرات الدمج</li>
+      </ul>
+      <a href="cash.html?plan=max_auto&price=300" class="btn-buy">اشترك الآن</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  function switchDashPricing(type) {
+    const btnGen = document.getElementById('dash-btn-gen');
+    const btnAuto = document.getElementById('dash-btn-auto');
+    const slider = document.getElementById('dash-toggle-slider');
+    const gridGen = document.getElementById('dash-grid-gen');
+    const gridAuto = document.getElementById('dash-grid-auto');
+    
+    btnGen.classList.remove('active');
+    btnAuto.classList.remove('active');
+    slider.classList.remove('gen-active', 'auto-active');
+    
+    if(type === 'gen') {
+      btnGen.classList.add('active');
+      slider.classList.add('gen-active');
+      
+      // إخفاء الشبكة الثانية ببطء
+      gridAuto.style.opacity = 0;
+      setTimeout(() => {
+        gridAuto.classList.remove('active');
+        gridGen.classList.add('active');
+        gridGen.style.opacity = 1;
+      }, 300);
+    } else {
+      btnAuto.classList.add('active');
+      slider.classList.add('auto-active');
+      
+      // إخفاء الشبكة الأولى ببطء
+      gridGen.style.opacity = 0;
+      setTimeout(() => {
+        gridGen.classList.remove('active');
+        gridAuto.classList.add('active');
+        gridAuto.style.opacity = 1;
+      }, 300);
+    }
+  }
+</script>
+
+</body>
+</html>
