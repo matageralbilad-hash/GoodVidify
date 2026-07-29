@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — استوديو الفيديو السينمائي بالذكاء الاصطناعي</title>
+<meta name="description" content="منصة GoodVidify تدمج بين التوليد الخيالي والمونتاج الوثائقي التلقائي لإنشاء فيديوهات 4K مذهلة في ثوانٍ." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #090a0f;
+  --bg-card: rgba(18, 20, 29, 0.6);
+  --gold-primary: #FFB800;
+  --gold-light: #FFD700;
+  --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --gradient-gold: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  --gradient-violet: linear-gradient(135deg, var(--violet-light), var(--violet-neon));
+  --glow-gold: 0 0 40px -10px rgba(255, 184, 0, 0.4);
+  --glow-violet: 0 0 40px -10px rgba(124, 58, 237, 0.4);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+
+/* Background Effects */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.15; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at 50% 0%, #000, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000, transparent 75%); }
+.orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; animation: float 10s ease-in-out infinite; }
+.orb-gold { width: 50vw; height: 50vw; top: -20%; right: -10%; background: radial-gradient(circle, var(--gold-primary), transparent 70%); }
+.orb-violet { width: 60vw; height: 60vw; bottom: -20%; left: -10%; background: radial-gradient(circle, var(--violet-neon), transparent 70%); animation-delay: -5s; }
+@keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+
+/* Layout & Glassmorphism */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.glass { background: var(--bg-card); border: 1px solid var(--border-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; }
+
+/* Navbar */
+header { position: fixed; top: 20px; left: 0; right: 0; z-index: 100; padding: 0 24px; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 0.5px; }
+.brand .icon { width: 40px; height: 40px; background: var(--gradient-violet); border-radius: 12px; display: grid; place-items: center; box-shadow: var(--glow-violet); position: relative; overflow: hidden; }
+.brand .icon::after { content: '▶'; color: white; font-size: 14px; margin-left: 3px; }
+.brand span { color: var(--text-main); }
+.brand span b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nav-links { display: none; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.nav-links a { padding: 8px 16px; border-radius: 999px; color: var(--text-muted); font-size: 15px; font-weight: 500; transition: 0.3s; }
+.nav-links a:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Language Switcher */
+.lang-switcher { position: relative; display: inline-block; }
+.lang-btn { background: transparent; border: 1px solid var(--border-glass); color: var(--text-main); padding: 10px 16px; border-radius: 999px; cursor: pointer; font-family: 'Tajawal'; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.lang-content { display: none; position: absolute; top: 110%; inset-inline-end: 0; background: var(--bg-card); border: 1px solid var(--border-glass); backdrop-filter: blur(20px); border-radius: 16px; min-width: 140px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.lang-content a { color: var(--text-muted); padding: 10px 16px; display: block; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.lang-content a:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+.lang-switcher:hover .lang-content { display: block; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; border-radius: 999px; font-weight: 700; font-size: 16px; transition: all 0.3s; cursor: pointer; border: none; font-family: inherit; }
+.btn-primary { background: var(--gradient-gold); color: #000; box-shadow: var(--glow-gold); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px -5px rgba(255, 184, 0, 0.6); }
+.btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-glass); }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+/* Hero Section */
+.hero { padding: 180px 0 100px; text-align: center; position: relative; }
+.badge { display: inline-flex; padding: 8px 20px; border-radius: 999px; border: 1px solid rgba(124, 58, 237, 0.3); background: rgba(124, 58, 237, 0.1); font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--violet-light); margin-bottom: 24px; box-shadow: var(--glow-violet); }
+.hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.15; margin: 0; font-weight: 900; }
+.hero h1 .highlight { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { max-width: 700px; margin: 24px auto 40px; color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; }
+.hero .actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* Intelligent Console (The Mockup) */
+.console-wrapper { margin: 80px auto 0; max-width: 1000px; text-align: start; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+.console-header { display: flex; gap: 8px; padding: 16px 20px; border-bottom: 1px solid var(--border-glass); background: rgba(0,0,0,0.2); }
+.console-dot { width: 12px; height: 12px; border-radius: 50%; }
+.console-body { padding: 30px; display: grid; gap: 30px; grid-template-columns: 1fr; }
+html[dir="rtl"] .prompt-area { border-right: 2px solid var(--gold-primary); padding-right: 20px; }
+html[dir="ltr"] .prompt-area { border-left: 2px solid var(--gold-primary); padding-left: 20px; }
+.prompt-label { font-size: 12px; color: var(--gold-primary); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+.prompt-text { font-size: 24px; font-weight: 500; line-height: 1.5; min-height: 80px; }
+.caret { display: inline-block; width: 3px; height: 26px; background: var(--violet-neon); vertical-align: middle; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.processing-status { font-size: 14px; color: var(--violet-light); margin-top: 20px; font-weight: 700; }
+.progress-bars { display: flex; gap: 8px; margin-top: 15px; }
+.progress-bars span { height: 4px; flex: 1; background: rgba(255,255,255,0.1); border-radius: 4px; transition: 0.5s; }
+.progress-bars span.active { background: var(--gradient-violet); box-shadow: var(--glow-violet); }
+
+/* Sections */
+.section { padding: 100px 0; position: relative; }
+.section-header { text-align: center; margin-bottom: 60px; max-width: 700px; margin-inline: auto; }
+.section-header h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 16px; }
+.section-header p { color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; }
+
+/* Grid Cards */
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.card { padding: 40px 30px; transition: transform 0.3s; position: relative; overflow: hidden; }
+.card:hover { transform: translateY(-5px); border-color: rgba(255, 184, 0, 0.3); }
+.card-icon { width: 50px; height: 50px; border-radius: 16px; background: rgba(255, 184, 0, 0.1); color: var(--gold-primary); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px; border: 1px solid rgba(255, 184, 0, 0.2); }
+.card h3 { font-size: 22px; margin: 0 0 12px; }
+.card p { color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+/* Pricing Section & Toggle */
+.pricing-toggle { display: flex; justify-content: center; margin-bottom: 50px; }
+.toggle-bg { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 999px; padding: 6px; display: inline-flex; position: relative; }
+.toggle-btn { padding: 12px 32px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--text-muted); cursor: pointer; border: none; background: transparent; font-family: inherit; transition: 0.3s; z-index: 1; }
+.toggle-btn.active { color: #000; }
+.toggle-slider { position: absolute; top: 6px; bottom: 6px; width: calc(50% - 6px); background: var(--gradient-gold); border-radius: 999px; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 0; box-shadow: var(--glow-gold); }
+
+.pricing-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; animation: fadeIn 0.5s ease-in-out; }
+.pricing-grid.active { display: grid; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.price-card { padding: 40px 30px; display: flex; flex-direction: column; position: relative; }
+.price-card.popular { border-color: var(--violet-light); box-shadow: var(--glow-violet); transform: scale(1.02); }
+.price-badge { position: absolute; top: -14px; inset-inline-end: 30px; background: var(--gradient-violet); padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; color: white; letter-spacing: 1px; }
+.price-header h3 { margin: 0; font-size: 20px; color: var(--gold-light); }
+.price-header .price { font-size: 44px; font-weight: 900; margin: 16px 0; display: flex; align-items: baseline; gap: 4px; }
+.price-header .price span { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+.price-features { margin: 30px 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; flex-grow: 1; }
+.price-features li { display: flex; align-items: flex-start; gap: 12px; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+.price-features li::before { content: '✓'; color: var(--gold-primary); font-weight: 900; }
+.price-card .btn { width: 100%; margin-top: auto; }
+
+/* CTA Footer */
+.cta-section { margin-top: 50px; padding: 80px 24px; text-align: center; background: radial-gradient(circle at center, rgba(124, 58, 237, 0.15), transparent 70%); border-top: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass); }
+.cta-section h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 24px; }
+footer { padding: 40px 24px; text-align: center; color: var(--text-muted); font-size: 14px; background: var(--bg-dark); }
+footer .creator { margin-top: 10px; font-size: 13px; opacity: 0.7; }
+footer .creator span { color: var(--gold-primary); font-weight: 700; font-family: 'Poppins', sans-serif;}
+
+/* Responsive */
+@media(min-width: 992px){
+  .nav-links { display: flex; }
+  .console-body { grid-template-columns: 1fr 1fr; }
+  .price-card.popular { transform: scale(1.05); z-index: 2; }
+}
+
+/* Animations */
+.reveal { opacity: 0; transform: translateY(40px); transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="grid-bg"></div>
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-violet"></div>
+</div>
+
+<header>
+  <nav class="glass container">
+    <a href="#" class="brand">
+      <div class="icon"></div>
+      <span>Good<b>Vidify</b></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#engines" data-i18n="nav_engines">المحركات الذكية</a></li>
+      <li><a href="#how" data-i18n="nav_how">كيف نعمل</a></li>
+      <li><a href="#pricing" data-i18n="nav_pricing">الباقات والتسعير</a></li>
+    </ul>
+    <div class="nav-actions">
+      <!-- ميزة تعدد اللغات 4 لغات -->
+      <div class="lang-switcher">
+        <button class="lang-btn" id="current-lang">🌐 العربية ▼</button>
+        <div class="lang-content glass">
+          <a href="javascript:void(0)" onclick="setLanguage('ar')">العربية (AR)</a>
+          <a href="javascript:void(0)" onclick="setLanguage('en')">English (EN)</a>
+          <a href="javascript:void(0)" onclick="setLanguage('fr')">Français (FR)</a>
+          <a href="javascript:void(0)" onclick="setLanguage('zh')">中文 (ZH)</a>
+        </div>
+      </div>
+      <a href="login.html" class="btn btn-primary" data-i18n="btn_start_free_nav">ابدأ مجاناً</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero container">
+  <div class="badge" data-i18n="hero_badge">الجيل القادم من صناعة الفيديو</div>
+  <h1 data-i18n="hero_title">من جملة واحدة <br><span class="highlight">إلى مشهد سينمائي</span> بدقة 4K</h1>
+  <p data-i18n="hero_desc">المنصة الأولى عالمياً التي تدمج بين الذكاء الاصطناعي التوليدي الخيالي والمونتاج الوثائقي التلقائي. اكتب فكرتك، دع مخرجنا الذكي يسألك، واستلم فيديوهاتك الاحترافية في ثوانٍ.</p>
+  <div class="actions">
+    <a href="login.html" class="btn btn-primary" data-i18n="btn_create_free">اصنع فيديو مجاني الآن</a>
+    <a href="#engines" class="btn btn-secondary" data-i18n="btn_explore">استكشف المحركات</a>
+  </div>
+
+  <div class="console-wrapper glass reveal">
+    <div class="console-header">
+      <div class="console-dot" style="background:#ff5f56"></div>
+      <div class="console-dot" style="background:#ffbd2e"></div>
+      <div class="console-dot" style="background:#27c93f"></div>
+      <span style="margin-inline-start: 12px; font-family: monospace; color: var(--text-muted); font-size: 13px;">director@goodvidify:~</span>
+    </div>
+    <div class="console-body">
+      <div class="prompt-area">
+        <div class="prompt-label" data-i18n="console_label">الأمر المدخل (Prompt)</div>
+        <div class="prompt-text">"<span id="typed-text"></span><span class="caret"></span>"</div>
+        <div class="processing-status" id="status-text">...</div>
+        <div class="progress-bars" id="progress-bars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div style="border-radius: 16px; overflow: hidden; position: relative; background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+         <div style="position: absolute; top: 12px; inset-inline-end: 12px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 8px; font-size: 11px; color: #fff; letter-spacing: 1px;">4K HDR • 60FPS</div>
+         <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px dashed var(--gold-primary); animation: spin 4s linear infinite; display: grid; place-items: center;">
+            <div style="width: 40px; height: 40px; background: var(--violet-neon); border-radius: 50%; filter: blur(10px); animation: pulse 2s ease-in-out infinite;"></div>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="engines" class="section container">
+  <div class="section-header reveal">
+    <h2 data-i18n="engines_title">محركان جباران في منصة واحدة</h2>
+    <p data-i18n="engines_desc">سواء كنت تبحث عن مشهد خيالي لا وجود له، أو مونتاج وثائقي سريع، نحن نوفر لك الأدوات.</p>
+  </div>
+  <div class="grid-cards">
+    <div class="card glass reveal">
+      <div class="card-icon">🐉</div>
+      <h3 data-i18n="engine_1_title">التوليد الخيالي (AI Gen)</h3>
+      <p data-i18n="engine_1_desc">محرك يولد الفيديوهات من الصفر فريماً بفريم. اطلب تنيناً يطير فوق مدينتك، أو سيارة تطير في الفضاء. سيقوم الذكاء الاصطناعي برسم المشهد بدقة سينمائية وتفاصيل خرافية.</p>
+    </div>
+    <div class="card glass reveal">
+      <div class="card-icon">🎬</div>
+      <h3 data-i18n="engine_2_title">المونتاج التلقائي الوثائقي</h3>
+      <p data-i18n="engine_2_desc">مثالي لصناع المحتوى (Faceless Channels). يكتب السيناريو، يولد تعليقاً صوتياً بشرياً فصيحاً، يجلب مقاطع 4K حقيقية، ويدمجها مع ترجمة متزامنة بشكل آلي تماماً.</p>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="section container">
+  <div class="section-header reveal">
+    <h2 data-i18n="how_title">كيف يعمل المخرج الذكي؟</h2>
+    <p data-i18n="how_desc">لا حاجة لخبرة في المونتاج أو كتابة أوامر معقدة. نحن نسألك، وأنت تجيب.</p>
+  </div>
+  <div class="grid-cards">
+    <div class="card glass reveal">
+      <div class="card-icon" style="font-size: 28px; font-weight: 900;">1</div>
+      <h3 data-i18n="how_1_title">اكتب الفكرة ببساطة</h3>
+      <p data-i18n="how_1_desc">أدخل فكرتك بأي لغة. لا تقلق بشأن التفاصيل التقنية، فقط أخبرنا بما تتخيله في جملة واحدة بسيطة.</p>
+    </div>
+    <div class="card glass reveal">
+      <div class="card-icon" style="font-size: 28px; font-weight: 900;">2</div>
+      <h3 data-i18n="how_2_title">أجب على المخرج</h3>
+      <p data-i18n="how_2_desc">سيقوم نظامنا بتحليل فكرتك وسؤالك خيارات سريعة: (ما هي زاوية الكاميرا؟ هل الإضاءة ليلية؟ كم مدة المشهد؟).</p>
+    </div>
+    <div class="card glass reveal">
+      <div class="card-icon" style="font-size: 28px; font-weight: 900;">3</div>
+      <h3 data-i18n="how_3_title">استلم تحفتك الفنية</h3>
+      <p data-i18n="how_3_desc">خلال دقائق، يقوم السيرفر السحابي بالرندر، ويسلمك فيديو 4K جاهزاً للتحميل والنشر المباشر عبر منصاتك.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="section container">
+  <div class="section-header reveal">
+    <h2 data-i18n="pricing_title">اختر خطتك.. وقسم دقائقك كما تشاء!</h2>
+    <p data-i18n="pricing_desc">أرصدة مرنة يمكنك استخدامها لإنتاج فيديو واحد طويل، أو تقسيمها لعشرات الفيديوهات القصيرة.</p>
+  </div>
+
+  <!-- Pricing Toggle -->
+  <div class="pricing-toggle reveal">
+    <div class="toggle-bg">
+      <div class="toggle-slider" id="toggle-slider"></div>
+      <button class="toggle-btn active" onclick="switchPricing('gen')" id="btn-gen" data-i18n="tab_gen">قسم التوليد الخيالي 🐉</button>
+      <button class="toggle-btn" onclick="switchPricing('auto')" id="btn-auto" data-i18n="tab_auto">قسم المونتاج الوثائقي 🎬</button>
+    </div>
+  </div>
+
+  <!-- Grid 1: AI Generation (Gen) -->
+  <div class="pricing-grid active" id="grid-gen">
+    <!-- باقة التجريبية -->
+    <div class="price-card glass reveal">
+      <div class="price-header">
+        <h3 data-i18n="gen_free_title">التجريبية</h3>
+        <div class="price" data-i18n="gen_free_price">مجاناً</div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="gen_free_f1">رصيد نصف دقيقة (30 ثانية)</li>
+        <li data-i18n="gen_free_f2">دقة 720p الأساسية</li>
+        <li data-i18n="gen_free_f3">علامة GoodVidify مائية بارزة</li>
+        <li data-i18n="gen_free_f4">مثالية لتجربة قوة المخرج الذكي</li>
+      </ul>
+      <a href="login.html" class="btn btn-secondary" data-i18n="btn_try_now">جرب الآن</a>
+    </div>
+
+    <!-- باقة الأساسية -->
+    <div class="price-card glass reveal">
+      <div class="price-header">
+        <h3 data-i18n="gen_basic_title">الأساسية</h3>
+        <div class="price">$30 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="gen_basic_f1">رصيد 5 دقائق (مقسمة كما تشاء)</li>
+        <li data-i18n="gen_basic_f2">دقة 1080p عالية</li>
+        <li data-i18n="gen_basic_f3">علامة مائية مصغرة جداً</li>
+        <li data-i18n="gen_basic_f4">دعم كافة الأسئلة التفاعلية</li>
+      </ul>
+      <a href="login.html" class="btn btn-secondary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+
+    <!-- باقة برو -->
+    <div class="price-card glass popular reveal">
+      <div class="price-badge" data-i18n="badge_pro">المميزة</div>
+      <div class="price-header">
+        <h3 data-i18n="gen_pro_title">برو (Pro)</h3>
+        <div class="price">$80 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="gen_pro_f1">رصيد 20 دقيقة (مقسمة كما تشاء)</li>
+        <li data-i18n="gen_pro_f2">دقة 4K سينمائية</li>
+        <li data-i18n="gen_pro_f3">بدون أي علامة مائية نهائياً</li>
+        <li data-i18n="gen_pro_f4">توليد أسرع + حقوق تجارية كاملة</li>
+      </ul>
+      <a href="login.html" class="btn btn-primary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+
+    <!-- باقة برو ماكس -->
+    <div class="price-card glass reveal">
+      <div class="price-header">
+        <h3 data-i18n="gen_max_title">برو ماكس</h3>
+        <div class="price">$320 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="gen_max_f1">رصيد 50 دقيقة (مقسمة كما تشاء)</li>
+        <li data-i18n="gen_max_f2">أقصى جودة وعدسات كاميرا متقدمة</li>
+        <li data-i18n="gen_max_f3">بدون علامة مائية</li>
+        <li data-i18n="gen_max_f4">مخصص للشركات والاستوديوهات الكبرى</li>
+      </ul>
+      <a href="login.html" class="btn btn-secondary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+  </div>
+
+  <!-- Grid 2: Automated Editing (Auto) -->
+  <div class="pricing-grid" id="grid-auto">
+    <!-- صانع المحتوى -->
+    <div class="price-card glass reveal">
+      <div class="price-header">
+        <h3 data-i18n="auto_creator_title">صانع المحتوى</h3>
+        <div class="price">$50 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="auto_creator_f1">رصيد 100 دقيقة شهرياً</li>
+        <li data-i18n="auto_creator_f2">إنشاء حتى 10 فيديوهات (حد أقصى 10 دقائق للفيديو)</li>
+        <li data-i18n="auto_creator_f3">صوت فصيح + ترجمة تلقائية</li>
+        <li data-i18n="auto_creator_f4">مقاطع B-Roll عالية الجودة</li>
+      </ul>
+      <a href="login.html" class="btn btn-secondary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+
+    <!-- القناة الاحترافية -->
+    <div class="price-card glass popular reveal">
+      <div class="price-badge" data-i18n="badge_save">الأكثر توفيراً</div>
+      <div class="price-header">
+        <h3 data-i18n="auto_pro_title">القناة الاحترافية</h3>
+        <div class="price">$100 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="auto_pro_f1">رصيد 750 دقيقة شهرياً</li>
+        <li data-i18n="auto_pro_f2">إنشاء حتى 30 فيديو (حد أقصى 25 دقيقة للفيديو)</li>
+        <li data-i18n="auto_pro_f3">بدون علامات مائية</li>
+        <li data-i18n="auto_pro_f4">رندر سريع وأصوات مميزة</li>
+      </ul>
+      <a href="login.html" class="btn btn-primary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+
+    <!-- بورماكس الوثائقي -->
+    <div class="price-card glass reveal">
+      <div class="price-header">
+        <h3 data-i18n="auto_max_title">بورماكس الوثائقي</h3>
+        <div class="price">$300 <span data-i18n="per_month">/ شهرياً</span></div>
+      </div>
+      <ul class="price-features">
+        <li data-i18n="auto_max_f1">رصيد 2000 دقيقة شهرياً</li>
+        <li data-i18n="auto_max_f2">إنشاء حتى 40 فيديو (حد أقصى 60 دقيقة)</li>
+        <li data-i18n="auto_max_f3">مثالي لقنوات الوثائقيات الطويلة جداً</li>
+        <li data-i18n="auto_max_f4">أولوية قصوى في سيرفرات الدمج</li>
+      </ul>
+      <a href="login.html" class="btn btn-secondary" data-i18n="btn_subscribe">اشترك الآن</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section reveal">
+  <h2 data-i18n="cta_title">جاهز لصناعة السحر؟</h2>
+  <p data-i18n="cta_desc" style="color: var(--text-muted); margin-bottom: 30px; font-size: 1.1rem;">أكثر من مئات المقاطع يتم تخيلها وإنشاؤها يومياً. لا تدع أفكارك حبيسة عقلك.</p>
+  <a href="login.html" class="btn btn-primary" style="padding: 16px 40px; font-size: 18px;" data-i18n="cta_btn">اصنع أول فيديو لك مجاناً ✦</a>
+</section>
+
+<footer>
+  <div data-i18n="footer_rights">© 2026 GoodVidify — جميع الحقوق محفوظة لـ استوديو الفيديوهات الذكية.</div>
+  <div class="creator">A project by <span>GOOD CODE Company</span></div>
+</footer>
+
+<script>
+// --- محرك الترجمة الشامل ---
+const translations = {
+  ar: {
+    lang_name: "🌐 العربية ▼",
+    nav_engines: "المحركات الذكية",
+    nav_how: "كيف نعمل",
+    nav_pricing: "الباقات والتسعير",
+    btn_start_free_nav: "ابدأ مجاناً",
+    hero_badge: "الجيل القادم من صناعة الفيديو",
+    hero_title: "من جملة واحدة <br><span class='highlight'>إلى مشهد سينمائي</span> بدقة 4K",
+    hero_desc: "المنصة الأولى عالمياً التي تدمج بين الذكاء الاصطناعي التوليدي الخيالي والمونتاج الوثائقي التلقائي. اكتب فكرتك، دع مخرجنا الذكي يسألك، واستلم فيديوهاتك الاحترافية في ثوانٍ.",
+    btn_create_free: "اصنع فيديو مجاني الآن",
+    btn_explore: "استكشف المحركات",
+    console_label: "الأمر المدخل (Prompt)",
+    engines_title: "محركان جباران في منصة واحدة",
+    engines_desc: "سواء كنت تبحث عن مشهد خيالي لا وجود له، أو مونتاج وثائقي سريع، نحن نوفر لك الأدوات.",
+    engine_1_title: "التوليد الخيالي (AI Gen)",
+    engine_1_desc: "محرك يولد الفيديوهات من الصفر فريماً بفريم. اطلب تنيناً يطير فوق مدينتك، أو سيارة تطير في الفضاء. سيقوم الذكاء الاصطناعي برسم المشهد بدقة سينمائية وتفاصيل خرافية.",
+    engine_2_title: "المونتاج التلقائي الوثائقي",
+    engine_2_desc: "مثالي لصناع المحتوى (Faceless Channels). يكتب السيناريو، يولد تعليقاً صوتياً بشرياً فصيحاً، يجلب مقاطع 4K حقيقية، ويدمجها مع ترجمة متزامنة بشكل آلي تماماً.",
+    how_title: "كيف يعمل المخرج الذكي؟",
+    how_desc: "لا حاجة لخبرة في المونتاج أو كتابة أوامر معقدة. نحن نسألك، وأنت تجيب.",
+    how_1_title: "اكتب الفكرة ببساطة",
+    how_1_desc: "أدخل فكرتك بأي لغة. لا تقلق بشأن التفاصيل التقنية، فقط أخبرنا بما تتخيله في جملة واحدة بسيطة.",
+    how_2_title: "أجب على المخرج",
+    how_2_desc: "سيقوم نظامنا بتحليل فكرتك وسؤالك خيارات سريعة: (ما هي زاوية الكاميرا؟ هل الإضاءة ليلية؟ كم مدة المشهد؟).",
+    how_3_title: "استلم تحفتك الفنية",
+    how_3_desc: "خلال دقائق، يقوم السيرفر السحابي بالرندر، ويسلمك فيديو 4K جاهزاً للتحميل والنشر المباشر عبر منصاتك.",
+    pricing_title: "اختر خطتك.. وقسم دقائقك كما تشاء!",
+    pricing_desc: "أرصدة مرنة يمكنك استخدامها لإنتاج فيديو واحد طويل، أو تقسيمها لعشرات الفيديوهات القصيرة.",
+    tab_gen: "قسم التوليد الخيالي 🐉",
+    tab_auto: "قسم المونتاج الوثائقي 🎬",
+    per_month: "/ شهرياً",
+    
+    gen_free_title: "التجريبية",
+    gen_free_price: "مجاناً",
+    gen_free_f1: "رصيد نصف دقيقة (30 ثانية)",
+    gen_free_f2: "دقة 720p الأساسية",
+    gen_free_f3: "علامة GoodVidify مائية بارزة",
+    gen_free_f4: "مثالية لتجربة قوة المخرج الذكي",
+    btn_try_now: "جرب الآن",
+
+    gen_basic_title: "الأساسية",
+    gen_basic_f1: "رصيد 5 دقائق (مقسمة كما تشاء)",
+    gen_basic_f2: "دقة 1080p عالية",
+    gen_basic_f3: "علامة مائية مصغرة جداً",
+    gen_basic_f4: "دعم كافة الأسئلة التفاعلية",
+    btn_subscribe: "اشترك الآن",
+
+    badge_pro: "المميزة",
+    gen_pro_title: "برو (Pro)",
+    gen_pro_f1: "رصيد 20 دقيقة (مقسمة كما تشاء)",
+    gen_pro_f2: "دقة 4K سينمائية",
+    gen_pro_f3: "بدون أي علامة مائية نهائياً",
+    gen_pro_f4: "توليد أسرع + حقوق تجارية كاملة",
+
+    gen_max_title: "برو ماكس",
+    gen_max_f1: "رصيد 50 دقيقة (مقسمة كما تشاء)",
+    gen_max_f2: "أقصى جودة وعدسات كاميرا متقدمة",
+    gen_max_f3: "بدون علامة مائية",
+    gen_max_f4: "مخصص للشركات والاستوديوهات الكبرى",
+
+    auto_creator_title: "صانع المحتوى",
+    auto_creator_f1: "رصيد 100 دقيقة شهرياً",
+    auto_creator_f2: "إنشاء حتى 10 فيديوهات (حد أقصى 10 دقائق للفيديو)",
+    auto_creator_f3: "صوت فصيح + ترجمة تلقائية",
+    auto_creator_f4: "مقاطع B-Roll عالية الجودة",
+
+    badge_save: "الأكثر توفيراً",
+    auto_pro_title: "القناة الاحترافية",
+    auto_pro_f1: "رصيد 750 دقيقة شهرياً",
+    auto_pro_f2: "إنشاء حتى 30 فيديو (حد أقصى 25 دقيقة للفيديو)",
+    auto_pro_f3: "بدون علامات مائية",
+    auto_pro_f4: "رندر سريع وأصوات مميزة",
+
+    auto_max_title: "بورماكس الوثائقي",
+    auto_max_f1: "رصيد 2000 دقيقة شهرياً",
+    auto_max_f2: "إنشاء حتى 40 فيديو (حد أقصى 60 دقيقة)",
+    auto_max_f3: "مثالي لقنوات الوثائقيات الطويلة جداً",
+    auto_max_f4: "أولوية قصوى في سيرفرات الدمج",
+
+    cta_title: "جاهز لصناعة السحر؟",
+    cta_desc: "أكثر من مئات المقاطع يتم تخيلها وإنشاؤها يومياً. لا تدع أفكارك حبيسة عقلك.",
+    cta_btn: "اصنع أول فيديو لك مجاناً ✦",
+    footer_rights: "© 2026 GoodVidify — جميع الحقوق محفوظة لـ استوديو الفيديوهات الذكية."
+  },
+  en: {
+    lang_name: "🌐 English ▼",
+    nav_engines: "Smart Engines",
+    nav_how: "How it Works",
+    nav_pricing: "Pricing",
+    btn_start_free_nav: "Start for Free",
+    hero_badge: "Next-Gen Video Creation",
+    hero_title: "From one sentence <br><span class='highlight'>to a cinematic scene</span> in 4K",
+    hero_desc: "The world's first platform combining generative AI and automated documentary editing. Enter your prompt and get professional videos in seconds.",
+    btn_create_free: "Create Free Video",
+    btn_explore: "Explore Engines",
+    console_label: "Prompt Input",
+    engines_title: "Two Powerful Engines",
+    engines_desc: "Whether you want a fictional scene or a quick documentary, we provide the tools.",
+    engine_1_title: "AI Generation",
+    engine_1_desc: "Generates videos from scratch frame by frame. Ask for a dragon flying over your city. AI will render it in cinematic quality.",
+    engine_2_title: "Automated Documentary",
+    engine_2_desc: "Perfect for faceless channels. It writes scripts, generates voiceovers, fetches 4K clips, and merges them with subtitles automatically.",
+    how_title: "How the Smart Director Works?",
+    how_desc: "No editing skills needed. We ask, you answer.",
+    how_1_title: "Write your Idea",
+    how_1_desc: "Enter your prompt in any language. Just describe what you imagine in one simple sentence.",
+    how_2_title: "Answer the Director",
+    how_2_desc: "Our system analyzes your idea and asks quick choices: Camera angle? Lighting? Duration?",
+    how_3_title: "Receive your Masterpiece",
+    how_3_desc: "In minutes, the cloud server renders a 4K video ready for download and publishing.",
+    pricing_title: "Choose your plan.. split your minutes!",
+    pricing_desc: "Flexible credits you can use for one long video, or split into dozens of short ones.",
+    tab_gen: "AI Generation 🐉",
+    tab_auto: "Automated Docs 🎬",
+    per_month: "/ month",
+    
+    gen_free_title: "Free Trial",
+    gen_free_price: "Free",
+    gen_free_f1: "30 seconds credit",
+    gen_free_f2: "720p Basic Quality",
+    gen_free_f3: "Large Watermark",
+    gen_free_f4: "Perfect to test the AI",
+    btn_try_now: "Try Now",
+
+    gen_basic_title: "Basic",
+    gen_basic_f1: "5 minutes credit (split as you wish)",
+    gen_basic_f2: "1080p High Quality",
+    gen_basic_f3: "Tiny Watermark",
+    gen_basic_f4: "All interactive questions supported",
+    btn_subscribe: "Subscribe",
+
+    badge_pro: "Popular",
+    gen_pro_title: "Pro",
+    gen_pro_f1: "20 minutes credit (split as you wish)",
+    gen_pro_f2: "4K Cinematic Quality",
+    gen_pro_f3: "No Watermark at all",
+    gen_pro_f4: "Faster generation + Commercial rights",
+
+    gen_max_title: "Pro Max",
+    gen_max_f1: "50 minutes credit (split as you wish)",
+    gen_max_f2: "Max quality & advanced camera lenses",
+    gen_max_f3: "No Watermark",
+    gen_max_f4: "For companies and major studios",
+
+    auto_creator_title: "Creator",
+    auto_creator_f1: "100 minutes credit / month",
+    auto_creator_f2: "Up to 10 videos (max 10 mins each)",
+    auto_creator_f3: "AI Voiceover + Auto Subtitles",
+    auto_creator_f4: "High quality B-Roll footage",
+
+    badge_save: "Best Value",
+    auto_pro_title: "Pro Channel",
+    auto_pro_f1: "750 minutes credit / month",
+    auto_pro_f2: "Up to 30 videos (max 25 mins each)",
+    auto_pro_f3: "No Watermarks",
+    auto_pro_f4: "Fast rendering & Premium Voices",
+
+    auto_max_title: "Doc Pro Max",
+    auto_max_f1: "2000 minutes credit / month",
+    auto_max_f2: "Up to 40 videos (max 60 mins each)",
+    auto_max_f3: "Ideal for long documentary channels",
+    auto_max_f4: "Top priority in rendering servers",
+
+    cta_title: "Ready to create magic?",
+    cta_desc: "Hundreds of videos are generated daily. Don't let your ideas stay in your mind.",
+    cta_btn: "Create Your First Video Free ✦",
+    footer_rights: "© 2026 GoodVidify — All rights reserved."
+  },
+  fr: {
+    lang_name: "🌐 Français ▼",
+    nav_engines: "Moteurs Intelligents",
+    nav_how: "Fonctionnement",
+    nav_pricing: "Tarifs",
+    btn_start_free_nav: "Commencer",
+    hero_badge: "Création Vidéo Next-Gen",
+    hero_title: "D'une phrase <br><span class='highlight'>à une scène cinéma</span> en 4K",
+    hero_desc: "La première plateforme combinant IA générative et montage documentaire automatisé. Entrez votre idée et obtenez une vidéo pro en secondes.",
+    btn_create_free: "Créer une vidéo gratuite",
+    btn_explore: "Explorer les moteurs",
+    console_label: "Entrée Rapide (Prompt)",
+    engines_title: "Deux Moteurs Puissants",
+    engines_desc: "Que vous vouliez une scène fictive ou un documentaire, nous avons les outils.",
+    engine_1_title: "Génération IA",
+    engine_1_desc: "Génère des vidéos de zéro image par image. Demandez un dragon, l'IA le créera en qualité cinéma.",
+    engine_2_title: "Documentaire Auto",
+    engine_2_desc: "Parfait pour YouTube. Écrit le script, génère la voix, trouve des clips 4K et fusionne tout avec sous-titres.",
+    how_title: "Comment fonctionne le réalisateur IA ?",
+    how_desc: "Aucune compétence requise. Nous demandons, vous répondez.",
+    how_1_title: "Écrivez votre Idée",
+    how_1_desc: "Décrivez ce que vous imaginez en une seule phrase simple.",
+    how_2_title: "Répondez au Réalisateur",
+    how_2_desc: "Notre système analyse votre idée et vous pose des questions rapides : Angle ? Lumière ?",
+    how_3_title: "Recevez votre Chef-d'œuvre",
+    how_3_desc: "En quelques minutes, le serveur cloud livre une vidéo 4K prête à être publiée.",
+    pricing_title: "Choisissez votre plan.. divisez vos minutes !",
+    pricing_desc: "Crédits flexibles à utiliser pour une longue vidéo ou plusieurs courtes.",
+    tab_gen: "Génération IA 🐉",
+    tab_auto: "Docs Automatisés 🎬",
+    per_month: "/ mois",
+    
+    gen_free_title: "Essai Gratuit",
+    gen_free_price: "Gratuit",
+    gen_free_f1: "Crédit de 30 secondes",
+    gen_free_f2: "Qualité de base 720p",
+    gen_free_f3: "Grand Filigrane",
+    gen_free_f4: "Parfait pour tester l'IA",
+    btn_try_now: "Essayer",
+
+    gen_basic_title: "Basique",
+    gen_basic_f1: "Crédit de 5 min (divisible)",
+    gen_basic_f2: "Haute Qualité 1080p",
+    gen_basic_f3: "Petit Filigrane",
+    gen_basic_f4: "Toutes les questions interactives",
+    btn_subscribe: "S'abonner",
+
+    badge_pro: "Populaire",
+    gen_pro_title: "Pro",
+    gen_pro_f1: "Crédit de 20 min (divisible)",
+    gen_pro_f2: "Qualité Cinéma 4K",
+    gen_pro_f3: "Aucun Filigrane",
+    gen_pro_f4: "Génération plus rapide + Droits commerciaux",
+
+    gen_max_title: "Pro Max",
+    gen_max_f1: "Crédit de 50 min (divisible)",
+    gen_max_f2: "Qualité max & objectifs avancés",
+    gen_max_f3: "Sans Filigrane",
+    gen_max_f4: "Pour les entreprises et grands studios",
+
+    auto_creator_title: "Créateur",
+    auto_creator_f1: "Crédit de 100 min / mois",
+    auto_creator_f2: "Jusqu'à 10 vidéos (max 10 min/chacune)",
+    auto_creator_f3: "Voix IA + Sous-titres Auto",
+    auto_creator_f4: "Séquences B-Roll de haute qualité",
+
+    badge_save: "Économique",
+    auto_pro_title: "Chaîne Pro",
+    auto_pro_f1: "Crédit de 750 min / mois",
+    auto_pro_f2: "Jusqu'à 30 vidéos (max 25 min/chacune)",
+    auto_pro_f3: "Sans Filigrane",
+    auto_pro_f4: "Rendu rapide & Voix Premium",
+
+    auto_max_title: "Doc Pro Max",
+    auto_max_f1: "Crédit de 2000 min / mois",
+    auto_max_f2: "Jusqu'à 40 vidéos (max 60 min/chacune)",
+    auto_max_f3: "Idéal pour les longs documentaires",
+    auto_max_f4: "Priorité absolue sur les serveurs",
+
+    cta_title: "Prêt à créer de la magie ?",
+    cta_desc: "Des centaines de vidéos sont générées chaque jour. Ne laissez pas vos idées dans votre tête.",
+    cta_btn: "Créez votre 1ère vidéo gratuitement ✦",
+    footer_rights: "© 2026 GoodVidify — Tous droits réservés."
+  },
+  zh: {
+    lang_name: "🌐 中文 ▼",
+    nav_engines: "智能引擎",
+    nav_how: "工作原理",
+    nav_pricing: "定价",
+    btn_start_free_nav: "免费开始",
+    hero_badge: "下一代视频创作",
+    hero_title: "从一句话 <br><span class='highlight'>到 4K 电影场景</span>",
+    hero_desc: "全球首个结合生成式AI和自动纪录片剪辑的平台。输入您的想法，几秒钟内即可获得专业视频。",
+    btn_create_free: "立即创建免费视频",
+    btn_explore: "探索引擎",
+    console_label: "提示输入 (Prompt)",
+    engines_title: "两大强大引擎",
+    engines_desc: "无论您是想要虚构场景还是快速纪录片，我们都有工具。",
+    engine_1_title: "AI 生成",
+    engine_1_desc: "从零开始逐帧生成视频。要求一条飞越城市的龙，AI 将以电影质量呈现。",
+    engine_2_title: "自动纪录片",
+    engine_2_desc: "非常适合无脸频道。自动编写脚本，生成配音，获取4K片段并合并字幕。",
+    how_title: "智能导演如何工作？",
+    how_desc: "无需剪辑技巧。我们问，你答。",
+    how_1_title: "写下你的想法",
+    how_1_desc: "用任何语言输入你的提示。只需用一句简单的话描述你的想象。",
+    how_2_title: "回答导演",
+    how_2_desc: "我们的系统会分析您的想法并提供快速选择：相机角度？灯光？持续时间？",
+    how_3_title: "接收你的杰作",
+    how_3_desc: "几分钟内，云服务器将渲染出可供下载和发布的 4K 视频。",
+    pricing_title: "选择您的计划.. 灵活分配时间！",
+    pricing_desc: "灵活的积分，您可以用于一个长视频，或分成几十个短视频。",
+    tab_gen: "AI 生成 🐉",
+    tab_auto: "自动文档 🎬",
+    per_month: "/ 月",
+    
+    gen_free_title: "免费试用",
+    gen_free_price: "免费",
+    gen_free_f1: "30秒信用额度",
+    gen_free_f2: "720p 基础质量",
+    gen_free_f3: "大水印",
+    gen_free_f4: "测试AI的完美选择",
+    btn_try_now: "立即尝试",
+
+    gen_basic_title: "基础版",
+    gen_basic_f1: "5分钟积分（可自由分配）",
+    gen_basic_f2: "1080p 高质量",
+    gen_basic_f3: "小水印",
+    gen_basic_f4: "支持所有互动问题",
+    btn_subscribe: "立即订阅",
+
+    badge_pro: "热门",
+    gen_pro_title: "专业版",
+    gen_pro_f1: "20分钟积分（可自由分配）",
+    gen_pro_f2: "4K 电影画质",
+    gen_pro_f3: "完全无水印",
+    gen_pro_f4: "更快的生成速度 + 商业版权",
+
+    gen_max_title: "Pro Max",
+    gen_max_f1: "50分钟积分（可自由分配）",
+    gen_max_f2: "最高质量和先进相机镜头",
+    gen_max_f3: "无水印",
+    gen_max_f4: "适用于公司和大型工作室",
+
+    auto_creator_title: "创作者",
+    auto_creator_f1: "每月 100 分钟积分",
+    auto_creator_f2: "最多 10 个视频（每个最长 10 分钟）",
+    auto_creator_f3: "AI 配音 + 自动字幕",
+    auto_creator_f4: "高质量 B-Roll 素材",
+
+    badge_save: "最超值",
+    auto_pro_title: "专业频道",
+    auto_pro_f1: "每月 750 分钟积分",
+    auto_pro_f2: "最多 30 个视频（每个最长 25 分钟）",
+    auto_pro_f3: "无水印",
+    auto_pro_f4: "快速渲染和高级语音",
+
+    auto_max_title: "文档 Pro Max",
+    auto_max_f1: "每月 2000 分钟积分",
+    auto_max_f2: "最多 40 个视频（每个最长 60 分钟）",
+    auto_max_f3: "长纪录片频道的理想选择",
+    auto_max_f4: "渲染服务器中的最高优先级",
+
+    cta_title: "准备好创造奇迹了吗？",
+    cta_desc: "每天生成数百个视频。不要让你的想法只停留在脑海中。",
+    cta_btn: "免费创建您的第一个视频 ✦",
+    footer_rights: "© 2026 GoodVidify — 保留所有权利。"
+  }
+};
+
+function setLanguage(lang) {
+  // 1. تغيير اتجاه الصفحة بناءً على اللغة
+  if (lang === 'ar') {
+    document.documentElement.dir = 'rtl';
+  } else {
+    document.documentElement.dir = 'ltr';
+  }
+  document.documentElement.lang = lang;
+
+  // 2. تحديث النصوص في كل العناصر التي تملك data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang] && translations[lang][key]) {
+      el.innerHTML = translations[lang][key];
+    }
+  });
+
+  // 3. تحديث اسم اللغة في الزر المنسدل
+  document.getElementById('current-lang').innerHTML = translations[lang]['lang_name'];
+  
+  // 4. حفظ اختيار المستخدم وإعادة ضبط شريط التبديل
+  localStorage.setItem('lang', lang);
+  
+  // إعادة تفعيل زر التبديل (Toggle) لضبط مكانه الصحيح مع الاتجاه الجديد
+  const activeToggleBtn = document.querySelector('.toggle-btn.active');
+  if(activeToggleBtn && activeToggleBtn.id === 'btn-gen') {
+      switchPricing('gen');
+  } else if (activeToggleBtn && activeToggleBtn.id === 'btn-auto') {
+      switchPricing('auto');
+  }
+}
+
+// تشغيل اللغة المحفوظة أو الافتراضية عند تحميل الصفحة
+window.onload = () => {
+  const savedLang = localStorage.getItem('lang') || 'ar';
+  setLanguage(savedLang);
+};
+
+// --- Typing & Status Animation for the Console ---
+(function(){
+  const text = "تنين أسطوري يحلّق فوق مباني مدينة صنعاء القديمة وينفث النار، إضاءة غروب سينمائية، زاوية طائرة درون...";
+  const typedEl = document.getElementById("typed-text");
+  const statusEl = document.getElementById("status-text");
+  const bars = document.querySelectorAll("#progress-bars span");
+  
+  const statuses = [
+    "✅ تم استقبال الفكرة بنجاح",
+    "⚙️ المخرج الذكي: يحلل زوايا الكاميرا...",
+    "🎨 يتم الآن ضبط الإضاءة وألوان السينما...",
+    "🚀 جاري التوليد بدقة 4K عبر السيرفرات السحابية...",
+    "✨ المشهد جاهز للتحميل والتصدير!"
+  ];
+
+  let i = 0, s = 0;
+  
+  const typer = setInterval(() => {
+    i++;
+    typedEl.textContent = text.slice(0, i);
+    if(i >= text.length){
+      clearInterval(typer);
+      startProcessing();
+    }
+  }, 60);
+
+  function startProcessing() {
+    setInterval(() => {
+      statusEl.textContent = statuses[s];
+      bars.forEach((b, index) => {
+        if(index <= s) b.classList.add("active");
+        else b.classList.remove("active");
+      });
+      s = (s + 1) % statuses.length;
+      if (s === 0) {
+        bars.forEach(b => b.classList.remove("active"));
+      }
+    }, 2500);
+  }
+})();
+
+// --- Pricing Toggle Logic ---
+function switchPricing(type) {
+  const btns = document.querySelectorAll('.toggle-btn');
+  const slider = document.getElementById('toggle-slider');
+  const gridGen = document.getElementById('grid-gen');
+  const gridAuto = document.getElementById('grid-auto');
+  
+  const isRTL = document.documentElement.dir === 'rtl';
+  
+  btns[0].classList.remove('active');
+  btns[1].classList.remove('active');
+  
+  if(type === 'gen') {
+    btns[0].classList.add('active');
+    // تعديل مكان المنزلق بناءً على الاتجاه
+    slider.style.left = isRTL ? 'auto' : '6px';
+    slider.style.right = isRTL ? '6px' : 'auto';
+    
+    gridAuto.classList.remove('active');
+    setTimeout(() => gridGen.classList.add('active'), 50);
+  } else {
+    btns[1].classList.add('active');
+    // تعديل مكان المنزلق بناءً على الاتجاه
+    slider.style.left = isRTL ? '6px' : 'calc(50% + 6px)';
+    slider.style.right = isRTL ? 'calc(50% + 6px)' : '6px';
+    
+    gridGen.classList.remove('active');
+    setTimeout(() => gridAuto.classList.add('active'), 50);
+  }
+}
+
+// --- Scroll Reveal Animation ---
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

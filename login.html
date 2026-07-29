@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — تسجيل الدخول</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #090a0f;
+  --bg-card: rgba(18, 20, 29, 0.7);
+  --gold-primary: #FFB800;
+  --gold-light: #FFD700;
+  --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --gradient-gold: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  --gradient-violet: linear-gradient(135deg, var(--violet-light), var(--violet-neon));
+  --glow-gold: 0 0 40px -10px rgba(255, 184, 0, 0.4);
+  --glow-violet: 0 0 40px -10px rgba(124, 58, 237, 0.4);
+}
+* { box-sizing: border-box; }
+body { margin: 0; height: 100vh; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+a { text-decoration: none; color: var(--gold-primary); font-weight: 700; }
+
+/* Background Effects */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.15; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at 50% 50%, #000, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000, transparent 70%); }
+.orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; }
+.orb-gold { width: 50vw; height: 50vw; top: -10%; right: -10%; background: radial-gradient(circle, var(--gold-primary), transparent 70%); }
+.orb-violet { width: 60vw; height: 60vw; bottom: -10%; left: -10%; background: radial-gradient(circle, var(--violet-neon), transparent 70%); }
+
+/* === The "Jumping Presenter" Animation === */
+#intro-animation {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: hideIntro 0s ease-in 3.5s forwards; /* يختفي بعد 3.5 ثانية */
+}
+
+/* الروبوت/الشخصية */
+.character {
+  width: 60px;
+  height: 80px;
+  position: relative;
+  animation: jumpSequence 3.2s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+}
+
+/* رأس الروبوت */
+.char-head {
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-violet);
+  border-radius: 12px;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  box-shadow: var(--glow-violet);
+}
+.char-head::after { /* عين الروبوت */
+  content: ''; position: absolute; top: 12px; left: 10px; width: 20px; height: 8px; background: #fff; border-radius: 4px; box-shadow: 0 0 10px #fff;
+}
+
+/* جسم الروبوت */
+.char-body {
+  width: 50px;
+  height: 35px;
+  background: var(--gradient-gold);
+  border-radius: 16px;
+  position: absolute;
+  top: 45px;
+  left: 5px;
+}
+
+/* يدين الشخصية تفتح كهدية */
+.char-hands {
+  width: 80px;
+  height: 10px;
+  background: #fff;
+  border-radius: 10px;
+  position: absolute;
+  top: 55px;
+  left: -10px;
+  transform: scaleX(0);
+  animation: openHands 0.5s ease-out 2.2s forwards;
+}
+
+/* موجة الهدية (الانفجار الضوئي) */
+.gift-blast {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  top: 50%;
+  opacity: 0;
+  box-shadow: 0 0 100px 50px var(--gold-light);
+  animation: blastEffect 1s ease-out 2.5s forwards;
+}
+
+@keyframes jumpSequence {
+  0% { transform: translateY(-300px) scale(0.5); opacity: 0; }
+  20% { transform: translateY(20px) scale(1.2) rotate(15deg); opacity: 1; } /* هبوط */
+  30% { transform: translateY(0) scale(0.9) rotate(0deg); }
+  50% { transform: translateY(0); }
+  60% { transform: translateY(-100px) scale(1.1); } /* قفزة الهدية */
+  70% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); opacity: 0; } /* اختفاء */
+}
+@keyframes openHands {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); box-shadow: var(--glow-gold); }
+}
+@keyframes blastEffect {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(80); opacity: 0; }
+}
+@keyframes hideIntro {
+  to { display: none; width: 0; height: 0; overflow: hidden; }
+}
+
+/* === Auth Form Glassmorphism === */
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  opacity: 0;
+  transform: scale(0.8);
+  animation: showForm 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 2.8s forwards; /* يظهر بعد الهدية */
+  z-index: 10;
+}
+@keyframes showForm {
+  to { opacity: 1; transform: scale(1); }
+}
+
+.brand { text-align: center; margin-bottom: 30px; font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 900; }
+.brand span { color: var(--text-main); }
+.brand b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+
+.input-group { margin-bottom: 20px; text-align: start; }
+.input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
+.input-group input { width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: inherit; font-size: 15px; transition: 0.3s; }
+.input-group input:focus { outline: none; border-color: var(--violet-light); box-shadow: inset 0 0 10px rgba(124, 58, 237, 0.2); }
+
+.btn { width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; font-family: inherit; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-primary { background: var(--gradient-violet); color: #fff; box-shadow: var(--glow-violet); margin-bottom: 20px; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(124, 58, 237, 0.6); }
+
+.divider { display: flex; align-items: center; text-align: center; margin: 20px 0; color: var(--text-muted); font-size: 12px; }
+.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.divider:not(:empty)::before { margin-inline-end: .25em; }
+.divider:not(:empty)::after { margin-inline-start: .25em; }
+
+.btn-google { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn-google:hover { background: rgba(255,255,255,0.1); }
+.btn-google img { width: 20px; }
+
+.switch-mode { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+.switch-mode a { cursor: pointer; }
+
+#error-msg { color: #ff5f56; font-size: 13px; text-align: center; margin-bottom: 15px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="grid-bg"></div>
+  <div class="orb orb-gold"></div>
+  <div class="orb orb-violet"></div>
+</div>
+
+<!-- الأنيميشن التفاعلي للدخول (المخرج الذكي الذي يقدم الهدية) -->
+<div id="intro-animation">
+  <div class="character">
+    <div class="char-head"></div>
+    <div class="char-body"></div>
+    <div class="char-hands"></div>
+  </div>
+  <div class="gift-blast"></div>
+</div>
+
+<!-- شاشة تسجيل الدخول -->
+<div class="auth-container">
+  <div class="brand"><span>Good<b>Vidify</b></span></div>
+  
+  <h2 class="title" id="form-title">مرحباً بعودتك!</h2>
+  <p class="subtitle" id="form-subtitle">سجل دخولك لمواصلة صناعة السحر.</p>
+
+  <div id="error-msg"></div>
+
+  <div class="input-group">
+    <label id="lbl-email">البريد الإلكتروني</label>
+    <input type="email" id="email" placeholder="name@example.com" required>
+  </div>
+
+  <div class="input-group">
+    <label id="lbl-password">كلمة المرور</label>
+    <input type="password" id="password" placeholder="••••••••" required>
+  </div>
+
+  <button class="btn btn-primary" id="btn-submit">تسجيل الدخول ✦</button>
+
+  <div class="divider" id="lbl-or">أو عبر</div>
+
+  <button class="btn btn-google" id="btn-google">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+    <span id="lbl-google">الدخول بحساب جوجل</span>
+  </button>
+
+  <div class="switch-mode">
+    <span id="lbl-switch-txt">ليس لديك حساب؟</span> 
+    <a id="btn-switch">إنشاء حساب جديد</a>
+  </div>
+</div>
+
+<!-- سكربت اللغات -->
+<script>
+let isLoginMode = true; // حالة الصفحة (دخول أم تسجيل جديد)
+let currentLang = 'ar';
+
+const authTranslations = {
+  ar: {
+    title_login: "مرحباً بعودتك!", sub_login: "سجل دخولك لمواصلة صناعة السحر.",
+    title_signup: "اصنع حسابك مجاناً!", sub_signup: "انضم إلينا وابدأ بتوليد الفيديوهات.",
+    lbl_email: "البريد الإلكتروني", lbl_password: "كلمة المرور",
+    btn_login: "تسجيل الدخول ✦", btn_signup: "إنشاء حساب ✦",
+    lbl_or: "أو عبر", lbl_google: "المتابعة بحساب جوجل",
+    switch_to_signup: "ليس لديك حساب؟", switch_to_signup_btn: "إنشاء حساب جديد",
+    switch_to_login: "لديك حساب بالفعل؟", switch_to_login_btn: "تسجيل الدخول"
+  },
+  en: {
+    title_login: "Welcome Back!", sub_login: "Sign in to continue making magic.",
+    title_signup: "Create Free Account!", sub_signup: "Join us and start generating videos.",
+    lbl_email: "Email Address", lbl_password: "Password",
+    btn_login: "Sign In ✦", btn_signup: "Sign Up ✦",
+    lbl_or: "OR WITH", lbl_google: "Continue with Google",
+    switch_to_signup: "Don't have an account?", switch_to_signup_btn: "Create new account",
+    switch_to_login: "Already have an account?", switch_to_login_btn: "Sign in here"
+  },
+  fr: {
+    title_login: "Content de vous revoir!", sub_login: "Connectez-vous pour créer de la magie.",
+    title_signup: "Créez un compte gratuit!", sub_signup: "Rejoignez-nous et générez des vidéos.",
+    lbl_email: "Adresse Email", lbl_password: "Mot de passe",
+    btn_login: "Se Connecter ✦", btn_signup: "S'inscrire ✦",
+    lbl_or: "OU AVEC", lbl_google: "Continuer avec Google",
+    switch_to_signup: "Pas de compte?", switch_to_signup_btn: "Créer un compte",
+    switch_to_login: "Déjà un compte?", switch_to_login_btn: "Se connecter"
+  },
+  zh: {
+    title_login: "欢迎回来！", sub_login: "登录以继续创造奇迹。",
+    title_signup: "免费创建账户！", sub_signup: "加入我们开始生成视频。",
+    lbl_email: "电子邮件", lbl_password: "密码",
+    btn_login: "登录 ✦", btn_signup: "注册 ✦",
+    lbl_or: "或通过", lbl_google: "使用 Google 继续",
+    switch_to_signup: "没有账户？", switch_to_signup_btn: "创建新账户",
+    switch_to_login: "已经有账户？", switch_to_login_btn: "在此登录"
+  }
+};
+
+function updateUI() {
+  const t = authTranslations[currentLang];
+  
+  if(isLoginMode) {
+    document.getElementById('form-title').innerText = t.title_login;
+    document.getElementById('form-subtitle').innerText = t.sub_login;
+    document.getElementById('btn-submit').innerText = t.btn_login;
+    document.getElementById('lbl-switch-txt').innerText = t.switch_to_signup;
+    document.getElementById('btn-switch').innerText = t.switch_to_signup_btn;
+  } else {
+    document.getElementById('form-title').innerText = t.title_signup;
+    document.getElementById('form-subtitle').innerText = t.sub_signup;
+    document.getElementById('btn-submit').innerText = t.btn_signup;
+    document.getElementById('lbl-switch-txt').innerText = t.switch_to_login;
+    document.getElementById('btn-switch').innerText = t.switch_to_login_btn;
+  }
+  
+  document.getElementById('lbl-email').innerText = t.lbl_email;
+  document.getElementById('lbl-password').innerText = t.lbl_password;
+  document.getElementById('lbl-or').innerText = t.lbl_or;
+  document.getElementById('lbl-google').innerText = t.lbl_google;
+}
+
+// قراءة اللغة من الصفحة الرئيسية
+window.onload = () => {
+  const savedLang = localStorage.getItem('lang') || 'ar';
+  currentLang = savedLang;
+  
+  if (savedLang === 'ar') { document.documentElement.dir = 'rtl'; } 
+  else { document.documentElement.dir = 'ltr'; }
+  document.documentElement.lang = savedLang;
+  
+  updateUI();
+};
+
+// تبديل بين الدخول والتسجيل
+document.getElementById('btn-switch').addEventListener('click', () => {
+  isLoginMode = !isLoginMode;
+  document.getElementById('error-msg').style.display = 'none';
+  updateUI();
+});
+</script>
+
+<!-- سكربت Firebase الموديولار الحديث -->
+<script type="module">
+  // استيراد أدوات Firebase من الخوادم السحابية
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+  // إعدادات Firebase الخاصة بمشروعك (scroli)
+  const firebaseConfig = {
+    apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
+    authDomain: "scroli.firebaseapp.com",
+    databaseURL: "https://scroli-default-rtdb.firebaseio.com",
+    projectId: "scroli",
+    storageBucket: "scroli.firebasestorage.app",
+    messagingSenderId: "839815358569",
+    appId: "1:839815358569:web:f62062770c11c7eb2ddaf8"
+  };
+
+  // تهيئة النظام
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  const emailInput = document.getElementById('email');
+  const passInput = document.getElementById('password');
+  const btnSubmit = document.getElementById('btn-submit');
+  const btnGoogle = document.getElementById('btn-google');
+  const errorMsg = document.getElementById('error-msg');
+
+  function showError(msg) {
+    errorMsg.innerText = msg;
+    errorMsg.style.display = 'block';
+  }
+
+  // معالجة الدخول العادي والتسجيل
+  btnSubmit.addEventListener('click', () => {
+    const email = emailInput.value;
+    const password = passInput.value;
+
+    if(!email || !password) {
+      showError(currentLang === 'ar' ? 'يرجى إدخال البريد وكلمة المرور' : 'Please enter email and password');
+      return;
+    }
+
+    btnSubmit.innerText = "...";
+    
+    if (isLoginMode) {
+      // تسجيل الدخول
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // تم الدخول بنجاح -> التوجيه للوحة التحكم
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          showError(currentLang === 'ar' ? 'خطأ في بيانات الدخول' : error.message);
+          updateUI();
+        });
+    } else {
+      // إنشاء حساب جديد
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // تم التسجيل بنجاح
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          showError(currentLang === 'ar' ? 'كلمة المرور ضعيفة أو البريد مستخدم' : error.message);
+          updateUI();
+        });
+    }
+  });
+
+  // معالجة الدخول بجوجل
+  btnGoogle.addEventListener('click', () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // تم الدخول بجوجل بنجاح
+        window.location.href = "dashboard.html";
+      }).catch((error) => {
+        showError(currentLang === 'ar' ? 'حدث خطأ في مصادقة جوجل' : error.message);
+      });
+  });
+</script>
+
+</body>
+</html>
