@@ -70,6 +70,7 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; }
 .notif-text { color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6; }
 
 .badge-new { background: var(--gradient-gold); color: #000; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 900; margin-inline-start: 10px; }
+.empty-state { text-align: center; color: var(--text-muted); padding: 40px; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -81,14 +82,11 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; }
   <div class="brand">Good<b>Vidify</b></div>
   
   <div class="nav-menu">
-    <!-- توجيه للصفحات الأخرى -->
     <a href="dashboard.html" class="nav-btn">🏠 الرئيسية</a>
     <a href="dashboard.html" class="nav-btn">📊 الاستخدام</a>
     <a href="dashboard.html" class="nav-btn">💬 الاستفسارات</a>
     
-    <!-- نحن الآن في صفحة الإشعارات -->
     <a href="Notifications.html" class="nav-btn active">🔔 الإشعارات</a>
-    
     <a href="packages.html" class="nav-btn">💳 الباقات والشراء</a>
   </div>
 
@@ -105,66 +103,20 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; }
       <h2>الإشعارات</h2>
       <p>تابع حالة فيديوهاتك، تحديثات النظام، وتنبيهات الباقة.</p>
     </div>
-    <button class="btn-clear" onclick="clearNotifications()">تحديد الكل كمقروء ✔️</button>
+    <button class="btn-clear" onclick="markAllAsRead()">تحديد الكل كمقروء ✔️</button>
   </div>
 
+  <!-- الحاوية التي سيتم عرض الإشعارات بداخلها من Firebase -->
   <div class="notifications-list" id="notif-list">
-    
-    <!-- إشعار غير مقروء (نجاح) -->
-    <div class="notif-card unread">
-      <div class="notif-icon icon-success">🎬</div>
-      <div class="notif-body">
-        <h3 class="notif-title">
-          <span>تم الانتهاء من توليد الفيديو الخاص بك! <span class="badge-new">جديد</span></span>
-          <span class="notif-time">الآن</span>
-        </h3>
-        <p class="notif-text">لقد اكتمل رندر الفيديو "تنين أسطوري فوق صنعاء" بدقة 4K بنجاح. يمكنك الآن الانتقال إلى الاستوديو لمعاينته وتحميله.</p>
-      </div>
-    </div>
-
-    <!-- إشعار غير مقروء (تنبيه/باقة) -->
-    <div class="notif-card unread">
-      <div class="notif-icon icon-warning">⏳</div>
-      <div class="notif-body">
-        <h3 class="notif-title">
-          <span>اقتراب نفاد رصيد الدقائق <span class="badge-new">جديد</span></span>
-          <span class="notif-time">منذ ساعتين</span>
-        </h3>
-        <p class="notif-text">لقد استهلكت 80% من رصيد باقة "برو" الخاصة بك. ننصحك بترقية باقتك أو شراء دقائق إضافية لتجنب توقف التوليد.</p>
-      </div>
-    </div>
-
-    <!-- إشعار مقروء (معلومة) -->
-    <div class="notif-card">
-      <div class="notif-icon icon-info">👋</div>
-      <div class="notif-body">
-        <h3 class="notif-title">
-          <span>مرحباً بك في GoodVidify</span>
-          <span class="notif-time">منذ يومين</span>
-        </h3>
-        <p class="notif-text">يسعدنا انضمامك إلى استوديو المستقبل. لا تتردد في استخدام المخرج الذكي لتحويل أبسط أفكارك إلى مشاهد سينمائية مذهلة.</p>
-      </div>
-    </div>
-
+    <div class="empty-state">جاري تحميل الإشعارات...</div>
   </div>
 </main>
 
-<script>
-  // دالة بسيطة لإزالة علامة "جديد" عند تحديد الكل كمقروء
-  function clearNotifications() {
-    const unreadCards = document.querySelectorAll('.notif-card.unread');
-    unreadCards.forEach(card => {
-      card.classList.remove('unread');
-      const badge = card.querySelector('.badge-new');
-      if(badge) badge.remove();
-    });
-  }
-</script>
-
-<!-- ربط Firebase Auth -->
+<!-- ربط Firebase Auth و Realtime Database -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
@@ -178,15 +130,87 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; }
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getDatabase(app);
+  
+  const notifList = document.getElementById('notif-list');
+  let currentUid = null;
+  let unreadKeys = []; // لتخزين معرفات الإشعارات غير المقروءة لاستخدامها عند النقر على "مقروء"
 
+  // التحقق من المستخدم وتفعيل مستمع الإشعارات
   onAuthStateChanged(auth, (user) => {
     if (user) { 
       document.getElementById('user-email').innerText = user.email; 
+      currentUid = user.uid;
+      fetchNotifications(user.uid);
     } else { 
       window.location.href = "login.html"; 
     }
   });
 
+  // جلب الإشعارات وعرضها (تعمل Realtime)
+  function fetchNotifications(uid) {
+    const notifRef = ref(db, 'users/' + uid + '/notifications');
+    onValue(notifRef, (snapshot) => {
+      notifList.innerHTML = '';
+      unreadKeys = [];
+      
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // تحويل الكائن إلى مصفوفة لترتيبها من الأحدث للأقدم
+        const notifsArray = Object.keys(data).map(key => {
+          return { id: key, ...data[key] };
+        }).reverse();
+
+        notifsArray.forEach(notif => {
+          if (!notif.isRead) unreadKeys.push(notif.id);
+
+          let iconClass = 'icon-info';
+          let iconEmoji = '👋';
+          
+          if (notif.type === 'success') { iconClass = 'icon-success'; iconEmoji = '🎬'; }
+          if (notif.type === 'warning') { iconClass = 'icon-warning'; iconEmoji = '⏳'; }
+
+          let unreadClass = notif.isRead ? '' : 'unread';
+          let badgeHtml = notif.isRead ? '' : '<span class="badge-new">جديد</span>';
+
+          const card = document.createElement('div');
+          card.className = `notif-card ${unreadClass}`;
+          card.innerHTML = `
+            <div class="notif-icon ${iconClass}">${iconEmoji}</div>
+            <div class="notif-body">
+              <h3 class="notif-title">
+                <span>${notif.title} ${badgeHtml}</span>
+                <span class="notif-time">${notif.time || ''}</span>
+              </h3>
+              <p class="notif-text">${notif.text}</p>
+            </div>
+          `;
+          notifList.appendChild(card);
+        });
+      } else {
+        notifList.innerHTML = '<div class="empty-state">لا توجد إشعارات حالياً.</div>';
+      }
+    });
+  }
+
+  // جعل دالة تحديث الحالة (مقروء) متاحة للنافذة
+  window.markAllAsRead = async function() {
+    if (!currentUid || unreadKeys.length === 0) return;
+    
+    const updates = {};
+    unreadKeys.forEach(key => {
+      updates[`users/${currentUid}/notifications/${key}/isRead`] = true;
+    });
+
+    try {
+      await update(ref(db), updates);
+      // الدالة fetchNotifications ستعمل تلقائياً بسبب onValue وتزيل التصميم "غير مقروء"
+    } catch (error) {
+      console.error("حدث خطأ أثناء تحديث الإشعارات", error);
+    }
+  };
+
+  // تسجيل الخروج
   document.getElementById('btn-logout').addEventListener('click', () => {
     signOut(auth).then(() => { window.location.href = "login.html"; });
   });
