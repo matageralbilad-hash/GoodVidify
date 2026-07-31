@@ -366,7 +366,7 @@ document.getElementById('btn-switch').addEventListener('click', () => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // تم الدخول بنجاح -> التوجيه للوحة التحكم
-          window.location.href = "dashboard.html";
+          window.location.href = "home.html";
         })
         .catch((error) => {
           showError(currentLang === 'ar' ? 'خطأ في بيانات الدخول' : error.message);
@@ -377,7 +377,7 @@ document.getElementById('btn-switch').addEventListener('click', () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // تم التسجيل بنجاح
-          window.location.href = "dashboard.html";
+          window.location.href = "home.html";
         })
         .catch((error) => {
           showError(currentLang === 'ar' ? 'كلمة المرور ضعيفة أو البريد مستخدم' : error.message);
@@ -391,7 +391,7 @@ document.getElementById('btn-switch').addEventListener('click', () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // تم الدخول بجوجل بنجاح
-        window.location.href = "dashboard.html";
+        window.location.href = "home.html";
       }).catch((error) => {
         showError(currentLang === 'ar' ? 'حدث خطأ في مصادقة جوجل' : error.message);
       });
