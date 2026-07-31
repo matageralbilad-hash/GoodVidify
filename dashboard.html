@@ -10,212 +10,126 @@
 <style>
 :root {
   --bg-dark: #090a0f;
-  --bg-card: rgba(18, 20, 29, 0.6);
+  --bg-panel: rgba(18, 20, 29, 0.8);
   --gold-primary: #FFB800;
-  --gold-light: #FFD700;
   --violet-neon: #7C3AED;
-  --violet-light: #9D4EDD;
   --text-main: #ffffff;
   --text-muted: #a1a1aa;
   --border-glass: rgba(255, 255, 255, 0.08);
-  --gradient-gold: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
-  --gradient-violet: linear-gradient(135deg, var(--violet-light), var(--violet-neon));
 }
 * { box-sizing: border-box; }
 body { margin: 0; display: flex; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; height: 100vh; overflow: hidden; }
 a { text-decoration: none; color: inherit; }
 
-/* === الخلفية والتأثيرات === */
-.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); -webkit-mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
+/* === الخلفية === */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.05; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; }
 
-/* === الشريط الجانبي (Sidebar) === */
-aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; }
+/* === الشريط الجانبي === */
+aside { width: 260px; background: var(--bg-panel); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 20; transition: 0.3s; }
 .brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
-.brand b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
+.brand b { background: linear-gradient(135deg, #FFD700, var(--gold-primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .nav-menu { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); text-align: start; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit; }
+.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; color: var(--text-muted); font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
 .nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: var(--violet-light); box-shadow: inset 0 0 20px rgba(124, 58, 237, 0.05); }
+.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: #9D4EDD; }
 
-.user-info { padding-top: 20px; border-top: 1px solid var(--border-glass); text-align: center; font-size: 13px; color: var(--text-muted); }
-.btn-logout { width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; background: rgba(255, 95, 86, 0.1); color: #ff5f56; border: 1px solid rgba(255, 95, 86, 0.2); cursor: pointer; font-weight: 700; transition: 0.3s; font-family: inherit; }
-.btn-logout:hover { background: rgba(255, 95, 86, 0.2); }
+/* === منطقة العمل الرئيسية === */
+.main-wrapper { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-/* === منطقة المحتوى (Main Content) === */
-main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
-.tab-content { display: none; animation: fadeIn 0.4s ease; }
-.tab-content.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* === الشريط العلوي === */
+header { height: 80px; background: rgba(9, 10, 15, 0.8); border-bottom: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; backdrop-filter: blur(15px); z-index: 10; }
+.header-title { font-size: 20px; font-weight: 700; }
+.header-title span { color: var(--gold-primary); font-size: 14px; background: rgba(255, 184, 0, 0.1); padding: 4px 10px; border-radius: 8px; margin-inline-start: 10px; display: inline-block; }
 
-/* العناوين الداخلية */
-.page-header { margin-bottom: 40px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; }
-.page-header h2 { margin: 0 0 10px; font-size: 28px; }
-.page-header p { margin: 0; color: var(--text-muted); }
+.user-profile { position: relative; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+.user-profile img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--violet-neon); object-fit: cover; }
+.user-info { display: flex; flex-direction: column; }
+.user-name { font-weight: 700; font-size: 15px; }
+.user-email { font-size: 12px; color: var(--text-muted); }
 
-/* === تصميم قسم الاستفسارات (Support) === */
-.support-container { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
-.glass-box { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); }
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); color: #fff; font-family: inherit; transition: 0.3s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--violet-light); }
-.btn-submit { color: #fff; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; width: 100%; transition: 0.3s; }
-.btn-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+/* القائمة المنسدلة للإعدادات */
+.settings-dropdown { position: absolute; top: 60px; inset-inline-end: 0; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 16px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; z-index: 100; }
+.user-profile:hover .settings-dropdown, .settings-dropdown:hover { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown-item { padding: 12px 15px; color: var(--text-main); font-size: 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+.dropdown-item:hover { background: rgba(124, 58, 237, 0.2); color: #fff; }
+.dropdown-divider { height: 1px; background: var(--border-glass); margin: 8px 0; }
+.logout-btn { color: #ff4757; }
+.logout-btn:hover { background: rgba(255, 71, 87, 0.1); }
 
-.contact-info { display: flex; flex-direction: column; gap: 20px; }
-.info-card { display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid var(--border-glass); }
-.info-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(255, 184, 0, 0.1); display: grid; place-items: center; font-size: 24px; color: var(--gold-primary); }
+/* === مساحة العمل (Home) === */
+main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
+.welcome-box { background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(0,0,0,0)); border: 1px solid var(--border-glass); padding: 30px; border-radius: 20px; }
+.welcome-box h1 { margin: 0 0 10px 0; font-size: 28px; }
+.welcome-box p { margin: 0; color: var(--text-muted); font-size: 16px; line-height: 1.6; }
 
-/* رسائل البناء للرئيسية والاستخدام */
-.construction-box { text-align: center; padding: 100px 20px; color: var(--text-muted); }
-.construction-box h1 { font-size: 40px; margin-bottom: 10px; color: var(--gold-primary); }
+/* للهواتف المحمولة */
+@media(max-width: 850px) {
+  body { flex-direction: column; }
+  aside { width: 100%; height: auto; flex-direction: row; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-glass); border-inline-end: none; }
+  .nav-menu { display: none; } /* سيتم عمل قائمة جانبية للموبايل لاحقاً */
+  .brand { margin: 0; }
+  header { padding: 0 20px; height: 70px; }
+  .user-email { display: none; }
+}
 </style>
 </head>
 <body>
 
 <div class="bg-effects"><div class="grid-bg"></div></div>
 
-<!-- الشريط الجانبي -->
 <aside>
   <div class="brand">Good<b>Vidify</b></div>
-  
   <div class="nav-menu">
-    <!-- التبويبات الداخلية -->
-    <button class="nav-btn active" onclick="openTab('tab-home', this)">🏠 الرئيسية</button>
-    <button class="nav-btn" onclick="openTab('tab-usage', this)">📊 الاستخدام</button>
-    <button class="nav-btn" onclick="openTab('tab-support', this)">💬 الاستفسارات</button>
-    
-    <!-- روابط لصفحات خارجية -->
-    <a href="Notifications.html" class="nav-btn">🔔 الإشعارات</a>
+    <!-- الروابط تستدعي الصفحات المختلفة -->
+    <a href="dashboard.html" class="nav-btn active">🏠 الرئيسية (الاستوديو)</a>
+    <a href="use.html" class="nav-btn">📊 الاستخدام والرصيد</a>
+    <a href="#" class="nav-btn">💬 الاستفسارات</a>
     <a href="packages.html" class="nav-btn">💳 الباقات والشراء</a>
-  </div>
-
-  <div class="user-info">
-    <div id="user-email">جاري التحميل...</div>
-    <button class="btn-logout" id="btn-logout">تسجيل الخروج</button>
   </div>
 </aside>
 
-<!-- منطقة المحتوى -->
-<main>
-
-  <!-- 1. الرئيسية (نشطة افتراضياً) -->
-  <div id="tab-home" class="tab-content active">
-    <div class="construction-box glass-box">
-      <h1>🎬</h1>
-      <h2>استوديو التوليد قيد التجهيز</h2>
-      <p>هنا سيكون محرك كتابة الأوامر وصناعة الفيديوهات.</p>
-    </div>
-  </div>
-
-  <!-- 2. الاستخدام -->
-  <div id="tab-usage" class="tab-content">
-    <div class="construction-box glass-box">
-      <h1>📊</h1>
-      <h2>لوحة الاستهلاك قيد التجهيز</h2>
-      <p>هنا ستظهر إحصائيات الدقائق المتبقية وتاريخ الفيديوهات المولدة.</p>
-    </div>
-  </div>
-
-  <!-- 3. الاستفسارات والاتصال (مع خيارات الإرسال لواتساب والإيميل) -->
-  <div id="tab-support" class="tab-content">
-    <div class="page-header">
-      <h2>الاستفسارات والدعم الفني</h2>
-      <p>أرسل استفسارك وسنقوم بالرد عليك عبر الواتساب أو البريد الإلكتروني.</p>
-    </div>
+<div class="main-wrapper">
+  <header>
+    <div class="header-title" id="top-plan-badge">جاري التحميل... <span>...</span></div>
     
-    <div class="support-container">
-      <div class="glass-box">
-        <div class="form-group">
-          <label>نوع الاستفسار</label>
-          <select id="support-type">
-            <option>مشكلة في التوليد</option>
-            <option>استفسار عن الباقات</option>
-            <option>اقتراح</option>
-            <option>أخرى</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>عنوان الرسالة</label>
-          <input type="text" id="support-title" placeholder="اكتب عنواناً مختصراً">
-        </div>
-        <div class="form-group">
-          <label>التفاصيل</label>
-          <textarea id="support-details" rows="4" placeholder="اشرح مشكلتك بالتفصيل..."></textarea>
-        </div>
-        
-        <div style="display: flex; gap: 12px;">
-          <!-- الإرسال عبر واتساب -->
-          <button class="btn-submit" onclick="sendViaWhatsApp()" style="background: #25D366; color: #000; box-shadow: 0 0 20px rgba(37,211,102,0.3);">إرسال عبر واتساب 💬</button>
-          
-          <!-- الإرسال عبر الإيميل -->
-          <button class="btn-submit" onclick="sendViaEmail()" style="background: var(--gradient-violet); box-shadow: var(--glow-violet);">إرسال عبر الإيميل ✉️</button>
-        </div>
+    <div class="user-profile">
+      <div class="user-info">
+        <span class="user-name" id="ui-username">المستخدم</span>
+        <span class="user-email" id="ui-email">email@domain.com</span>
       </div>
-
-      <div class="contact-info">
-        <div class="info-card">
-          <div class="info-icon" style="color: #25D366; background: rgba(37,211,102,0.1);">📱</div>
-          <div>
-            <h4 style="margin:0 0 5px;">رقم الدعم المباشر</h4>
-            <span style="color:var(--text-muted); font-size:14px;">967-774-257-557+</span>
-          </div>
-        </div>
-        <div class="info-card">
-          <div class="info-icon">📧</div>
-          <div>
-            <h4 style="margin:0 0 5px;">البريد الإلكتروني</h4>
-            <span style="color:var(--text-muted); font-size:14px;">support@goodvidify.com</span>
-          </div>
-        </div>
+      <img src="https://via.placeholder.com/150" alt="Profile" id="ui-avatar">
+      
+      <!-- قائمة الإعدادات المنسدلة -->
+      <div class="settings-dropdown">
+        <a href="#" class="dropdown-item">🌐 اللغة (عربي / English)</a>
+        <a href="#" class="dropdown-item">🎨 المظهر (داكن / فاتح)</a>
+        <a href="#" class="dropdown-item">🛠 خدماتنا (GOOD CODE)</a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item logout-btn" id="btn-logout">🚪 تسجيل الخروج</a>
       </div>
     </div>
-  </div>
+  </header>
 
-</main>
-
-<!-- نظام التبويبات وإرسال الرسائل -->
-<script>
-  function openTab(tabId, btnElement) {
-    document.querySelectorAll('.tab-content').forEach(tab => { tab.classList.remove('active'); });
-    document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('active'); });
-    document.getElementById(tabId).classList.add('active');
-    btnElement.classList.add('active');
-  }
-
-  // دالة الإرسال إلى واتسابك الخاص
-  function sendViaWhatsApp() {
-    const type = document.getElementById('support-type').value;
-    const title = document.getElementById('support-title').value;
-    const details = document.getElementById('support-details').value;
+  <!-- مساحة العمل (Home) التي تظهر عند الضغط على الرئيسية -->
+  <main id="workspace">
+    <div class="welcome-box">
+      <h1 id="welcome-msg">مرحباً بك في استوديو الذكاء الاصطناعي</h1>
+      <p>هذه هي مساحة العمل الرئيسية (Home). هنا سنقوم لاحقاً بإضافة مربع إدخال النص السحري لاختيار اللغات، أبعاد الفيديو، ستايل الإخراج، وزر التوليد الذي سيبدأ بسحب الرصيد.</p>
+    </div>
     
-    if(!title || !details) { alert('يرجى كتابة العنوان والتفاصيل.'); return; }
+    <!-- يمكننا إضافة قسم "المشاريع السابقة" هنا لاحقاً -->
+    <div id="previous-chats" style="color: var(--text-muted);">
+      جاري تحميل مشاريعك السابقة...
+    </div>
+  </main>
+</div>
 
-    const message = `*استفسار جديد من لوحة التحكم*%0A%0A*النوع:* ${type}%0A*العنوان:* ${title}%0A*التفاصيل:* ${details}`;
-    const whatsappLink = `https://wa.me/967774257557?text=${message}`;
-    window.open(whatsappLink, '_blank');
-  }
-
-  // دالة الإرسال عبر تطبيق الإيميل
-  function sendViaEmail() {
-    const type = document.getElementById('support-type').value;
-    const title = document.getElementById('support-title').value;
-    const details = document.getElementById('support-details').value;
-    
-    if(!title || !details) { alert('يرجى كتابة العنوان والتفاصيل.'); return; }
-
-    const body = `النوع: ${type}%0D%0Aالتفاصيل: ${details}`;
-    const emailLink = `mailto:support@goodvidify.com?subject=${encodeURIComponent(title)}&body=${body}`;
-    window.location.href = emailLink;
-  }
-</script>
-
-<!-- ربط Firebase Auth -->
+<!-- ربط Firebase Auth و Realtime Database -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
@@ -229,14 +143,97 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; position: relative; }
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getDatabase(app);
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) { document.getElementById('user-email').innerText = user.email; } 
-    else { window.location.href = "login.html"; }
+  // 1. دالة التحقق من الجهاز (منع الحسابات المتعددة المجانية)
+  async function checkDeviceLimit(user) {
+    let deviceId = localStorage.getItem('goodvidify_device_id');
+    
+    // إذا لم يكن يملك بصمة جهاز، ننشئ له واحدة ونحفظها في المتصفح
+    if (!deviceId) {
+      deviceId = 'dev_' + Math.random().toString(36).substr(2, 16);
+      localStorage.setItem('goodvidify_device_id', deviceId);
+    }
+
+    const deviceRef = ref(db, 'devices/' + deviceId);
+    const snap = await get(deviceRef);
+
+    if (snap.exists()) {
+      const registeredUid = snap.val().uid;
+      // إذا كان الجهاز مسجلاً مسبقاً لحساب آخر!
+      if (registeredUid !== user.uid) {
+        console.warn("تحذير: تم اكتشاف استخدام جهاز مسجل بحساب آخر.");
+        // هنا يمكننا مستقبلاً وضع كود يمنعه من التوليد المجاني ويجبره على الشراء
+        return "restricted"; 
+      }
+    } else {
+      // تسجيل هذا الجهاز باسم هذا المستخدم الجديد
+      await set(deviceRef, {
+        uid: user.uid,
+        firstLogin: new Date().toISOString()
+      });
+    }
+    return "clean";
+  }
+
+  // 2. مراقبة حالة تسجيل الدخول
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // عرض بيانات المستخدم في الشريط العلوي
+      document.getElementById('ui-username').innerText = user.displayName || 'مستخدم GoodVidify';
+      document.getElementById('ui-email').innerText = user.email;
+      if (user.photoURL) {
+        document.getElementById('ui-avatar').src = user.photoURL;
+      }
+      
+      document.getElementById('welcome-msg').innerText = `مرحباً بعودتك يا ${user.displayName ? user.displayName.split(' ')[0] : 'مبدع'}! ✨`;
+
+      // تشغيل فحص الجهاز
+      const deviceStatus = await checkDeviceLimit(user);
+
+      // جلب خطة الاشتراك الحالية
+      const subRef = ref(db, 'users/' + user.uid + '/subscription');
+      const snap = await get(subRef);
+      
+      let currentPlanText = "الباقة التجريبية";
+      
+      if (snap.exists()) {
+        const subData = snap.val();
+        const now = new Date();
+        const expiry = new Date(subData.expiryDate);
+
+        if (subData.status === 'active' && now < expiry) {
+          // يمكن ترجمة الكود الخاص بالباقة إلى اسم مقروء
+          const plansNames = {
+            'basic_gen': 'الأساسية', 'pro_gen': 'برو', 'max_gen': 'برو ماكس',
+            'creator_auto': 'صانع المحتوى', 'pro_auto': 'الاحترافية', 'max_auto': 'بورماكس'
+          };
+          currentPlanText = plansNames[subData.activePlan] || subData.activePlan;
+        }
+      } else {
+        // إذا لم يشترك وهو على المجاني، والجهاز مقيد
+        if (deviceStatus === "restricted") {
+          currentPlanText = "تنبيه: تم استنفاد الرصيد المجاني لهذا الجهاز";
+        }
+      }
+
+      // تحديث شريط الحالة
+      document.getElementById('top-plan-badge').innerHTML = `لوحة التحكم <span>${currentPlanText}</span>`;
+
+      // هنا مستقبلاً سنقوم بجلب "مشاريع ودردشات" المستخدم من قاعدة البيانات وعرضها
+
+    } else {
+      // طرد المستخدم إذا لم يسجل الدخول
+      window.location.href = "login.html";
+    }
   });
 
-  document.getElementById('btn-logout').addEventListener('click', () => {
-    signOut(auth).then(() => { window.location.href = "login.html"; });
+  // 3. زر تسجيل الخروج
+  document.getElementById('btn-logout').addEventListener('click', (e) => {
+    e.preventDefault();
+    signOut(auth).then(() => {
+      window.location.href = "login.html";
+    });
   });
 </script>
 
