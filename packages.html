@@ -31,7 +31,7 @@ a { text-decoration: none; color: inherit; }
 .grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
 
 /* === الشريط الجانبي === */
-aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; }
+aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; transition: 0.3s; }
 .brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
 .brand b { background: linear-gradient(135deg, var(--gold-light), var(--gold-primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
@@ -56,7 +56,7 @@ html[dir="rtl"] .toggle-slider.gen-active { inset-inline-start: 8px; }
 html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
 
 /* === شبكة الباقات === */
-.pricing-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; animation: fadeInUp 0.6s ease-out forwards; align-items: center; }
+.pricing-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; animation: fadeInUp 0.6s ease-out forwards; align-items: stretch; }
 .pricing-grid.active { display: grid; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -71,7 +71,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
 
 /* نصوص الباقة */
 .price-card h3 { margin: 0; color: var(--gold-light); font-size: 22px; }
-.price-card .price { font-size: 46px; font-weight: 900; margin: 20px 0; display: flex; align-items: baseline; gap: 5px; color: #fff; }
+.price-card .price { font-size: 46px; font-weight: 900; margin: 20px 0; display: flex; align-items: baseline; gap: 5px; color: #fff; direction: ltr; }
 .price-card .price span { font-size: 15px; color: var(--text-muted); font-weight: normal; }
 
 .price-card ul { list-style: none; padding: 0; margin: 0 0 30px; flex-grow: 1; display: flex; flex-direction: column; gap: 16px; }
@@ -83,6 +83,19 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
 .btn-buy:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 .btn-buy.primary { background: linear-gradient(135deg, var(--violet-light), var(--violet-neon)); border: none; box-shadow: 0 10px 20px rgba(124,58,237,0.3); }
 .btn-buy.primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(124,58,237,0.5); }
+.btn-buy.active-plan { background: #25D366 !important; border-color: #25D366 !important; cursor: default !important; transform: none !important; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3) !important; color: white !important; }
+
+/* للهواتف المحمولة */
+@media(max-width: 850px) {
+  body { flex-direction: column; overflow-y: auto; }
+  aside { width: 100%; border-inline-end: none; border-bottom: 1px solid var(--border-glass); padding: 15px; flex-direction: row; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20; }
+  .brand { margin-bottom: 0; font-size: 18px; }
+  .nav-menu { display: none; } /* يمكن تفعيل قائمة منسدلة لاحقاً */
+  main { overflow-y: visible; padding: 20px; }
+  .price-card.popular { transform: scale(1); }
+  .price-card.popular:hover { transform: translateY(-5px); }
+  .toggle-btn { padding: 10px 20px; font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -126,7 +139,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>علامة GoodVidify مائية بارزة</li>
         <li>مثالية لتجربة قوة المخرج الذكي</li>
       </ul>
-      <a href="cash.html?plan=free_gen&price=0" class="btn-buy">جرب الآن</a>
+      <a href="dashboard.html" class="btn-buy" data-plan="free_gen">الباقة الحالية الافتراضية</a>
     </div>
 
     <!-- الباقة الأساسية -->
@@ -139,7 +152,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>علامة مائية مصغرة جداً</li>
         <li>دعم كافة الأسئلة التفاعلية</li>
       </ul>
-      <a href="cash.html?plan=basic_gen&price=30" class="btn-buy">اشترك الآن</a>
+      <a href="cash.html?plan=basic_gen" class="btn-buy" data-plan="basic_gen">اشترك الآن</a>
     </div>
 
     <!-- باقة برو (المميزة بصرياً) -->
@@ -153,7 +166,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>بدون أي علامة مائية نهائياً</li>
         <li>توليد أسرع + حقوق تجارية كاملة</li>
       </ul>
-      <a href="cash.html?plan=pro_gen&price=80" class="btn-buy primary">اشترك الآن ✦</a>
+      <a href="cash.html?plan=pro_gen" class="btn-buy primary" data-plan="pro_gen">اشترك الآن ✦</a>
     </div>
 
     <!-- باقة برو ماكس -->
@@ -166,7 +179,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>بدون علامة مائية</li>
         <li>مخصص للشركات والاستوديوهات الكبرى</li>
       </ul>
-      <a href="cash.html?plan=max_gen&price=320" class="btn-buy">اشترك الآن</a>
+      <a href="cash.html?plan=max_gen" class="btn-buy" data-plan="max_gen">اشترك الآن</a>
     </div>
   </div>
 
@@ -182,7 +195,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>صوت فصيح + ترجمة تلقائية</li>
         <li>مقاطع B-Roll عالية الجودة</li>
       </ul>
-      <a href="cash.html?plan=creator_auto&price=50" class="btn-buy">اشترك الآن</a>
+      <a href="cash.html?plan=creator_auto" class="btn-buy" data-plan="creator_auto">اشترك الآن</a>
     </div>
 
     <!-- القناة الاحترافية (المميزة بصرياً) -->
@@ -196,7 +209,7 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>بدون علامات مائية</li>
         <li>رندر سريع وأصوات مميزة</li>
       </ul>
-      <a href="cash.html?plan=pro_auto&price=100" class="btn-buy primary">اشترك الآن ✦</a>
+      <a href="cash.html?plan=pro_auto" class="btn-buy primary" data-plan="pro_auto">اشترك الآن ✦</a>
     </div>
 
     <!-- بورماكس الوثائقي -->
@@ -209,12 +222,13 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
         <li>مثالي لقنوات الوثائقيات الطويلة جداً</li>
         <li>أولوية قصوى في سيرفرات الدمج</li>
       </ul>
-      <a href="cash.html?plan=max_auto&price=300" class="btn-buy">اشترك الآن</a>
+      <a href="cash.html?plan=max_auto" class="btn-buy" data-plan="max_auto">اشترك الآن</a>
     </div>
   </div>
 </main>
 
 <script>
+  // دالة التبديل بين قسم التوليد والمونتاج
   function switchDashPricing(type) {
     const btnGen = document.getElementById('dash-btn-gen');
     const btnAuto = document.getElementById('dash-btn-auto');
@@ -229,27 +243,93 @@ html[dir="rtl"] .toggle-slider.auto-active { inset-inline-end: 8px; }
     if(type === 'gen') {
       btnGen.classList.add('active');
       slider.classList.add('gen-active');
-      
-      // إخفاء الشبكة الثانية ببطء
       gridAuto.style.opacity = 0;
-      setTimeout(() => {
-        gridAuto.classList.remove('active');
-        gridGen.classList.add('active');
-        gridGen.style.opacity = 1;
-      }, 300);
+      setTimeout(() => { gridAuto.classList.remove('active'); gridGen.classList.add('active'); gridGen.style.opacity = 1; }, 300);
     } else {
       btnAuto.classList.add('active');
       slider.classList.add('auto-active');
-      
-      // إخفاء الشبكة الأولى ببطء
       gridGen.style.opacity = 0;
-      setTimeout(() => {
-        gridGen.classList.remove('active');
-        gridAuto.classList.add('active');
-        gridAuto.style.opacity = 1;
-      }, 300);
+      setTimeout(() => { gridGen.classList.remove('active'); gridAuto.classList.add('active'); gridAuto.style.opacity = 1; }, 300);
     }
   }
+</script>
+
+<!-- ربط Firebase Auth و Realtime Database لإدارة الاشتراكات -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
+    authDomain: "scroli.firebaseapp.com",
+    databaseURL: "https://scroli-default-rtdb.firebaseio.com",
+    projectId: "scroli",
+    storageBucket: "scroli.firebasestorage.app",
+    messagingSenderId: "839815358569",
+    appId: "1:839815358569:web:f62062770c11c7eb2ddaf8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // 1. فحص إذا كان المستخدم عائداً من عملية دفع ناجحة عبر الرابط
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('payment') === 'success') {
+        const purchasedPlan = localStorage.getItem('pending_plan');
+        if (purchasedPlan) {
+          // حساب تاريخ الانتهاء (بعد 30 يوماً من الآن)
+          const expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + 30);
+
+          // حفظ بيانات الاشتراك في قاعدة البيانات
+          await update(ref(db, 'users/' + user.uid + '/subscription'), {
+            activePlan: purchasedPlan,
+            status: 'active',
+            expiryDate: expiryDate.toISOString()
+          });
+          
+          localStorage.removeItem('pending_plan');
+          alert("🎉 تهانينا! تم تفعيل باقتك بنجاح. رصيدك الآن جاهز للاستخدام.");
+          
+          // إزالة متغيرات الدفع من الرابط لكي لا تتكرر العملية عند التحديث
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+
+      // 2. قراءة الاشتراك الحالي لتعديل شكل الأزرار بذكاء
+      const subRef = ref(db, 'users/' + user.uid + '/subscription');
+      const snapshot = await get(subRef);
+      
+      if (snapshot.exists()) {
+        const subData = snapshot.val();
+        const now = new Date();
+        const expiry = new Date(subData.expiryDate);
+
+        // إذا كانت الخطة فعالة ولم تنتهِ مدتها
+        if (subData.status === 'active' && now < expiry) {
+          const planCode = subData.activePlan;
+          const targetBtn = document.querySelector(`a[data-plan="${planCode}"]`);
+          
+          if (targetBtn) {
+            targetBtn.innerText = "⭐ باقتك الحالية";
+            targetBtn.classList.add('active-plan'); // إضافة كلاس الزر الأخضر
+            targetBtn.href = "#"; // تعطيل الرابط
+            targetBtn.onclick = (e) => e.preventDefault(); // منع النقر
+          }
+        } else if (now >= expiry) {
+          // تحديث الحالة إلى منتهية إذا مر الوقت
+          await update(ref(db, 'users/' + user.uid + '/subscription'), { status: 'expired' });
+        }
+      }
+    } else {
+      // طرد المستخدم إذا لم يسجل الدخول
+      window.location.href = "login.html";
+    }
+  });
 </script>
 
 </body>
