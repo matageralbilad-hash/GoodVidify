@@ -29,7 +29,7 @@ a { text-decoration: none; color: inherit; }
 .bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
 
-/* === الشريط الجانبي === */
+/* === الشريط الجانبي الثابت والموحد === */
 aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; }
 .brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
 .brand b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -89,13 +89,13 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
 
 <div class="bg-effects"><div class="grid-bg"></div></div>
 
-<!-- الشريط الجانبي الثابت -->
+<!-- الشريط الجانبي الثابت والموحد -->
 <aside>
   <div class="brand">Good<b>Vidify</b></div>
   
   <div class="nav-menu">
-    <a href="home.html" class="nav-btn">🏠 الرئيسية (الاستوديو)</a>
-    <a href="use.html" class="nav-btn">📊 الاستخدام والرصيد</a>
+    <a href="home.html" class="nav-btn">🏠 الرئيسية</a>
+    <a href="use.html" class="nav-btn">📊 الاستخدام</a>
     <a href="inquiries.html" class="nav-btn active">💬 الاستفسارات</a>
     <a href="Notifications.html" class="nav-btn">🔔 الإشعارات</a>
     <a href="packages.html" class="nav-btn">💳 الباقات والشراء</a>
@@ -208,7 +208,7 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
   });
 </script>
 
-<!-- ربط Firebase لإرسال الرسائل -->
+<!-- ربط Firebase لإرسال الرسائل إلى مسار الأدمن -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -247,7 +247,7 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
     signOut(auth).then(() => { window.location.href = "login.html"; });
   });
 
-  // إرسال الاستفسار لقاعدة البيانات
+  // إرسال الاستفسار لقاعدة البيانات (مخصص للوحة الأدمن)
   document.getElementById('btn-submit-inquiry').addEventListener('click', async () => {
     if (!currentUser) return;
 
@@ -269,18 +269,18 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
     btn.disabled = true;
 
     try {
-      // حفظ الرسالة في مسار خاص بالاستفسارات
-      const inqRef = ref(db, 'inquiries');
+      // تم التعديل: حفظ الرسائل في مسار منفصل وخاص بالأدمن (admin/inquiries)
+      const inqRef = ref(db, 'admin/inquiries');
       const newInqRef = push(inqRef);
       await set(newInqRef, {
-        uid: currentUser.uid,
-        email: currentUser.email,
-        name: name,
-        type: type,
-        title: title,
-        description: desc,
-        timestamp: new Date().toISOString(),
-        status: 'pending' // معلق حتى يرد عليه الدعم
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        senderName: name,
+        issueType: type,
+        issueTitle: title,
+        issueDescription: desc,
+        submittedAt: new Date().toISOString(),
+        status: 'Unread' // لتسهيل الفرز في لوحة الأدمن
       });
 
       statusDiv.style.display = 'block';
