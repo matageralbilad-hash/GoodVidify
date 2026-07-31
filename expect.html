@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — القيادة العليا (Expect)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #050505;
+  --bg-card: rgba(15, 15, 20, 0.8);
+  --gold-primary: #FFB800;
+  --violet-neon: #7C3AED;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --danger: #ff4757;
+  --success: #2ed573;
+}
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; height: 100vh; overflow: hidden; }
+a { text-decoration: none; color: inherit; }
+
+/* === تأثيرات القيادة العليا === */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.05; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 30px 30px; }
+
+/* === الشريط الجانبي للأدمن === */
+aside { width: 260px; background: rgba(10, 10, 15, 0.95); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; z-index: 10; }
+.brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; color: var(--danger); text-shadow: 0 0 15px rgba(255, 71, 87, 0.5); }
+.brand span { color: #fff; }
+
+.nav-menu { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+.nav-btn { padding: 14px 20px; border-radius: 12px; color: var(--text-muted); font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+.nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-btn.active { background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); color: var(--danger); }
+
+/* === المحتوى === */
+main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
+.header { border-bottom: 1px solid var(--border-glass); padding-bottom: 20px; }
+.header h2 { margin: 0 0 5px; font-size: 28px; }
+.header p { margin: 0; color: var(--text-muted); }
+
+/* === 1. الإحصائيات المعقدة === */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 25px; border-radius: 16px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--violet-neon); }
+.stat-card:nth-child(2)::before { background: var(--success); }
+.stat-card:nth-child(3)::before { background: var(--gold-primary); }
+.stat-card:nth-child(4)::before { background: var(--danger); }
+
+.stat-title { font-size: 14px; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
+.stat-value { font-size: 36px; font-weight: 900; font-family: 'Poppins', sans-serif; margin: 0; }
+.stat-desc { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+/* === 2. قسم إدارة المستخدمين والإشعارات === */
+.admin-sections { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start; }
+
+/* الإشعارات */
+.panel-box { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 25px; }
+.panel-title { font-size: 18px; font-weight: 900; margin-bottom: 20px; color: var(--gold-light); border-bottom: 1px solid var(--border-glass); padding-bottom: 10px; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; font-family: inherit; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--danger); }
+
+.radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
+.radio-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; }
+.radio-group input[type="radio"] { accent-color: var(--danger); }
+
+.btn { width: 100%; padding: 14px; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; border: none; font-family: inherit; transition: 0.3s; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #e04840; }
+.btn-action { background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+.btn-action:hover { background: var(--violet-neon); }
+
+/* جدول المستخدمين */
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: right; }
+th, td { padding: 15px; border-bottom: 1px solid var(--border-glass); font-size: 14px; }
+th { color: var(--text-muted); font-weight: 700; background: rgba(0,0,0,0.3); }
+tr:hover { background: rgba(255,255,255,0.02); }
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+.badge-active { background: rgba(46, 213, 115, 0.2); color: var(--success); }
+.badge-free { background: rgba(161, 161, 170, 0.2); color: var(--text-muted); }
+.badge-banned { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
+
+/* نافذة منبثقة (Modal) لتعديل المستخدم */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.modal { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; }
+.modal h3 { margin-top: 0; color: var(--gold-light); }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+@media(max-width: 1000px) {
+  .admin-sections { grid-template-columns: 1fr; }
+  aside { display: none; } /* يفضل فتح لوحة الإدارة من الكمبيوتر */
+}
+</style>
+</head>
+<body>
+
+<div class="bg-effects"><div class="grid-bg"></div></div>
+
+<aside>
+  <div class="brand"><span>Good</span><b>Vidify</b><br><span style="font-size: 12px; color: var(--danger);">Admin Panel</span></div>
+  <div class="nav-menu">
+    <a href="#" class="nav-btn active">📊 الإحصائيات والمستخدمين</a>
+    <a href="#" class="nav-btn" onclick="alert('الرسائل محفوظة في مسار expect/inquiries في قاعدة البيانات')">💬 استفسارات الزبائن</a>
+    <a href="home.html" class="nav-btn">⬅️ العودة للموقع</a>
+  </div>
+</aside>
+
+<main>
+  <div class="header">
+    <h2>القيادة العليا (Control Room) 👁️‍🗨️</h2>
+    <p>مراقبة شاملة وتحكم كامل في المنصة.</p>
+  </div>
+
+  <!-- 1. الإحصائيات -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">إجمالي المستخدمين</div>
+      <div class="stat-value" id="stat-users">0</div>
+      <div class="stat-desc">حساب مسجل في المنصة</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">إجمالي الأرباح (تقريبي)</div>
+      <div class="stat-value" style="color: var(--success);"><span style="font-size: 20px;">$</span><span id="stat-revenue">0</span></div>
+      <div class="stat-desc">مبني على الاشتراكات النشطة</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">الاشتراكات النشطة</div>
+      <div class="stat-value" id="stat-subs" style="color: var(--gold-primary);">0</div>
+      <div class="stat-desc">عميل يدفع حالياً</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">الباقة الأكثر مبيعاً</div>
+      <div class="stat-value" id="stat-popular" style="font-size: 24px; margin-top: 10px; color: var(--danger);">جاري الحساب...</div>
+      <div class="stat-desc">أعلى نسبة اشتراك</div>
+    </div>
+  </div>
+
+  <div class="admin-sections">
+    <!-- 2. جدول المستخدمين -->
+    <div class="panel-box">
+      <div class="panel-title">قاعدة بيانات المستخدمين 👥</div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>الإيميل</th>
+              <th>الباقة الحالية</th>
+              <th>تاريخ الانتهاء</th>
+              <th>الحالة</th>
+              <th>إجراءات (تعديل)</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr><td colspan="5" style="text-align: center;">جاري جلب البيانات من Firebase...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. إرسال الإشعارات -->
+    <div class="panel-box">
+      <div class="panel-title">مركز الإشعارات 📡</div>
+      
+      <div class="radio-group">
+        <label><input type="radio" name="notif-target" value="all" checked onchange="toggleUidField()"> 🌐 للجميع (إعلان عام)</label>
+        <label><input type="radio" name="notif-target" value="single" onchange="toggleUidField()"> 👤 لفرد محدد</label>
+      </div>
+
+      <div class="form-group" id="uid-group" style="display: none;">
+        <label>معرف المستخدم (UID)</label>
+        <input type="text" id="notif-uid" placeholder="الصق UID الخاص بالزبون هنا">
+      </div>
+      
+      <div class="form-group">
+        <label>نوع الإشعار</label>
+        <select id="notif-type">
+          <option value="info">معلومة عامة (بنفسجي)</option>
+          <option value="success">إشعار نجاح (أخضر)</option>
+          <option value="warning">تنبيه إداري (ذهبي)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>عنوان الإشعار</label>
+        <input type="text" id="notif-title" placeholder="مثال: تحديث جديد للمنصة!">
+      </div>
+
+      <div class="form-group">
+        <label>نص الإشعار</label>
+        <textarea id="notif-body" rows="3" placeholder="اكتب تفاصيل الإشعار هنا..."></textarea>
+      </div>
+
+      <button class="btn btn-danger" id="btn-send-notif">إرسال القذيفة 🚀</button>
+      <div id="notif-status" style="margin-top: 10px; font-size: 13px; text-align: center;"></div>
+    </div>
+  </div>
+</main>
+
+<!-- نافذة تعديل المستخدم (Modal) -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3 id="modal-user-email">تعديل المستخدم</h3>
+    
+    <div class="form-group">
+      <label>تغيير الباقة / إضافة رصيد</label>
+      <select id="modal-plan">
+        <option value="free">مجاني (إلغاء الاشتراك)</option>
+        <option value="basic_gen">الأساسية ($30)</option>
+        <option value="pro_gen">برو ($80)</option>
+        <option value="max_gen">برو ماكس ($320)</option>
+        <option value="creator_auto">صانع المحتوى ($50)</option>
+        <option value="pro_auto">الاحترافية ($100)</option>
+        <option value="max_auto">بورماكس الوثائقي ($300)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>حالة الحساب</label>
+      <select id="modal-status">
+        <option value="active">نشط (سماح بالدخول)</option>
+        <option value="banned">محظور (تسجيل خروج إجباري ومنع)</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btn-save-edit">حفظ التغييرات</button>
+      <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="closeModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleUidField() {
+    const isSingle = document.querySelector('input[name="notif-target"]:checked').value === 'single';
+    document.getElementById('uid-group').style.display = isSingle ? 'block' : 'none';
+  }
+  function closeModal() { document.getElementById('edit-modal').style.display = 'none'; }
+</script>
+
+<!-- Firebase Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getDatabase, ref, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyConJRhjncwJ3f6oQvH7Ap7mpa6m9NH4oQ",
+    authDomain: "scroli.firebaseapp.com",
+    databaseURL: "https://scroli-default-rtdb.firebaseio.com",
+    projectId: "scroli",
+    storageBucket: "scroli.firebasestorage.app",
+    messagingSenderId: "839815358569",
+    appId: "1:839815358569:web:f62062770c11c7eb2ddaf8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  let allUsersData = {}; // لتخزين الداتا
+  let currentEditUid = null;
+
+  // أسعار الباقات لغرض حساب الأرباح
+  const planPrices = {
+    'basic_gen': 30, 'pro_gen': 80, 'max_gen': 320,
+    'creator_auto': 50, 'pro_auto': 100, 'max_auto': 300
+  };
+  const planNames = {
+    'basic_gen': 'الأساسية', 'pro_gen': 'برو', 'max_gen': 'برو ماكس',
+    'creator_auto': 'صانع المحتوى', 'pro_auto': 'الاحترافية', 'max_auto': 'بورماكس'
+  };
+
+  // التأكد من تسجيل الدخول (في مشروع حقيقي يتم التأكد أن إيميله هو إيميل الأدمن)
+  onAuthStateChanged(auth, (user) => {
+    if (!user) window.location.href = "login.html";
+  });
+
+  // 1. جلب البيانات والإحصائيات
+  const usersRef = ref(db, 'users');
+  onValue(usersRef, (snapshot) => {
+    const tbody = document.getElementById('users-table-body');
+    tbody.innerHTML = '';
+    
+    if (snapshot.exists()) {
+      allUsersData = snapshot.val();
+      let totalUsers = 0;
+      let totalRevenue = 0;
+      let activeSubs = 0;
+      let planCounts = {};
+
+      Object.keys(allUsersData).forEach(uid => {
+        totalUsers++;
+        const userData = allUsersData[uid];
+        const sub = userData.subscription || {};
+        
+        let planBadge = '<span class="badge badge-free">مجاني</span>';
+        let expiryText = '-';
+        let accountStatus = userData.accountStatus === 'banned' ? '<span class="badge badge-banned">محظور ⛔</span>' : '<span class="badge badge-active">نشط ✔️</span>';
+
+        const now = new Date();
+        const isSubActive = sub.status === 'active' && new Date(sub.expiryDate) > now;
+
+        if (isSubActive) {
+          activeSubs++;
+          totalRevenue += planPrices[sub.activePlan] || 0;
+          planCounts[sub.activePlan] = (planCounts[sub.activePlan] || 0) + 1;
+          
+          planBadge = `<span class="badge badge-active">${planNames[sub.activePlan] || sub.activePlan}</span>`;
+          expiryText = new Date(sub.expiryDate).toLocaleDateString('ar-EG');
+        }
+
+        // إنشاء صف في الجدول
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${userData.email || 'مستخدم_' + uid.substring(0,5)}</td>
+          <td>${planBadge}</td>
+          <td style="font-family: monospace;">${expiryText}</td>
+          <td>${accountStatus}</td>
+          <td><button class="btn btn-action" onclick="openEditModal('${uid}', '${userData.email || 'غير معروف'}')">تعديل / حظر</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // تحديث الأرقام الفخمة
+      document.getElementById('stat-users').innerText = totalUsers;
+      document.getElementById('stat-revenue').innerText = totalRevenue;
+      document.getElementById('stat-subs').innerText = activeSubs;
+
+      // حساب الباقة الأكثر مبيعاً
+      if (Object.keys(planCounts).length > 0) {
+        const topPlan = Object.keys(planCounts).reduce((a, b) => planCounts[a] > planCounts[b] ? a : b);
+        document.getElementById('stat-popular').innerText = planNames[topPlan];
+      } else {
+        document.getElementById('stat-popular').innerText = "لا يوجد";
+      }
+
+    } else {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا يوجد مستخدمين مسجلين بعد.</td></tr>';
+    }
+  });
+
+  // 2. دوال تعديل المستخدم (مربوطة بالـ Window لتعمل مع HTML onclick)
+  window.openEditModal = function(uid, email) {
+    currentEditUid = uid;
+    document.getElementById('modal-user-email').innerText = `تعديل: ${email}`;
+    
+    // جلب الداتا الحالية لتعبئة الفورم
+    const user = allUsersData[uid];
+    if (user && user.subscription && user.subscription.status === 'active') {
+      document.getElementById('modal-plan').value = user.subscription.activePlan;
+    } else {
+      document.getElementById('modal-plan').value = 'free';
+    }
+    
+    document.getElementById('modal-status').value = user.accountStatus === 'banned' ? 'banned' : 'active';
+    document.getElementById('edit-modal').style.display = 'flex';
+  };
+
+  document.getElementById('btn-save-edit').addEventListener('click', async () => {
+    if (!currentEditUid) return;
+    
+    const plan = document.getElementById('modal-plan').value;
+    const accStatus = document.getElementById('modal-status').value;
+    
+    let updates = {};
+    updates[`users/${currentEditUid}/accountStatus`] = accStatus; // الحظر أو التفعيل
+    
+    if (plan === 'free') {
+      updates[`users/${currentEditUid}/subscription/status`] = 'expired';
+    } else {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 30); // إعطاء 30 يوم من الآن
+      updates[`users/${currentEditUid}/subscription`] = {
+        activePlan: plan,
+        status: 'active',
+        expiryDate: expiryDate.toISOString()
+      };
+    }
+
+    try {
+      await update(ref(db), updates);
+      alert('✅ تم تطبيق التعديلات بنجاح على قاعدة البيانات.');
+      closeModal();
+    } catch (e) {
+      alert('حدث خطأ: ' + e.message);
+    }
+  });
+
+  // 3. إرسال الإشعارات (للجميع أو لفرد)
+  document.getElementById('btn-send-notif').addEventListener('click', async () => {
+    const target = document.querySelector('input[name="notif-target"]:checked').value;
+    const type = document.getElementById('notif-type').value;
+    const title = document.getElementById('notif-title').value.trim();
+    const body = document.getElementById('notif-body').value.trim();
+    const statusMsg = document.getElementById('notif-status');
+
+    if (!title || !body) {
+      statusMsg.style.color = '#ff4757';
+      statusMsg.innerText = "يرجى كتابة العنوان والنص!";
+      return;
+    }
+
+    const notifData = {
+      title: title, text: body, type: type,
+      time: new Date().toLocaleDateString('ar-EG', { hour: 'numeric', minute: 'numeric' }),
+      isRead: false
+    };
+
+    try {
+      document.getElementById('btn-send-notif').innerText = "جاري القصف... 💣";
+      
+      if (target === 'all') {
+        // الإرسال لجميع الـ UIDs
+        const uids = Object.keys(allUsersData);
+        let promises = [];
+        uids.forEach(uid => {
+          const newNotifRef = push(ref(db, `users/${uid}/notifications`));
+          promises.push(set(newNotifRef, notifData));
+        });
+        await Promise.all(promises);
+        statusMsg.innerText = `✅ تم الإرسال لـ ${uids.length} مستخدم بنجاح!`;
+
+      } else {
+        // الإرسال لفرد
+        const targetUid = document.getElementById('notif-uid').value.trim();
+        if (!targetUid) throw new Error("يرجى إدخال UID المستخدم");
+        const newNotifRef = push(ref(db, `users/${targetUid}/notifications`));
+        await set(newNotifRef, notifData);
+        statusMsg.innerText = "✅ تم الإرسال للمستخدم بنجاح!";
+      }
+      
+      statusMsg.style.color = '#2ed573';
+      document.getElementById('notif-title').value = '';
+      document.getElementById('notif-body').value = '';
+      
+    } catch (error) {
+      statusMsg.style.color = '#ff4757';
+      statusMsg.innerText = "خطأ: " + error.message;
+    } finally {
+      document.getElementById('btn-send-notif').innerText = "إرسال القذيفة 🚀";
+    }
+  });
+</script>
+
+</body>
+</html>
