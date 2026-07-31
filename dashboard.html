@@ -3,74 +3,89 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GoodVidify — لوحة التحكم</title>
+<title>GoodVidify — الاستوديو (الرئيسية)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg-dark: #090a0f;
-  --bg-panel: rgba(18, 20, 29, 0.8);
+  --bg-card: rgba(18, 20, 29, 0.6);
   --gold-primary: #FFB800;
+  --gold-light: #FFD700;
   --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
   --text-main: #ffffff;
   --text-muted: #a1a1aa;
   --border-glass: rgba(255, 255, 255, 0.08);
+  --gradient-gold: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  --gradient-violet: linear-gradient(135deg, var(--violet-light), var(--violet-neon));
 }
 * { box-sizing: border-box; }
 body { margin: 0; display: flex; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; height: 100vh; overflow: hidden; }
 a { text-decoration: none; color: inherit; }
 
-/* === الخلفية === */
-.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-.grid-bg { position: absolute; inset: 0; opacity: 0.05; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; }
+/* === الخلفية والتأثيرات (نفس القديمة تماماً) === */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
 
-/* === الشريط الجانبي === */
-aside { width: 260px; background: var(--bg-panel); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 20; transition: 0.3s; }
+/* === الشريط الجانبي (مطابق لصفحة الإشعارات والباقات) === */
+aside { width: 260px; background: rgba(12, 14, 20, 0.8); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 20; }
 .brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
-.brand b { background: linear-gradient(135deg, #FFD700, var(--gold-primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.brand b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
 .nav-menu { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; color: var(--text-muted); font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); text-align: start; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit; }
 .nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: #9D4EDD; }
+.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: var(--violet-light); box-shadow: inset 0 0 20px rgba(124, 58, 237, 0.05); }
 
-/* === منطقة العمل الرئيسية === */
-.main-wrapper { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.user-info { padding-top: 20px; border-top: 1px solid var(--border-glass); text-align: center; font-size: 13px; color: var(--text-muted); }
+.btn-logout { width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; background: rgba(255, 95, 86, 0.1); color: #ff5f56; border: 1px solid rgba(255, 95, 86, 0.2); cursor: pointer; font-weight: 700; transition: 0.3s; font-family: inherit; }
+.btn-logout:hover { background: rgba(255, 95, 86, 0.2); }
 
-/* === الشريط العلوي === */
-header { height: 80px; background: rgba(9, 10, 15, 0.8); border-bottom: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; backdrop-filter: blur(15px); z-index: 10; }
-.header-title { font-size: 20px; font-weight: 700; }
-.header-title span { color: var(--gold-primary); font-size: 14px; background: rgba(255, 184, 0, 0.1); padding: 4px 10px; border-radius: 8px; margin-inline-start: 10px; display: inline-block; }
+/* === مساحة العمل الرئيسية === */
+main { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scroll-behavior: smooth; }
 
-.user-profile { position: relative; display: flex; align-items: center; gap: 15px; cursor: pointer; }
-.user-profile img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--violet-neon); object-fit: cover; }
-.user-info { display: flex; flex-direction: column; }
-.user-name { font-weight: 700; font-size: 15px; }
-.user-email { font-size: 12px; color: var(--text-muted); }
+/* === الشريط العلوي (داخل الـ Main) === */
+header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-glass); background: rgba(18, 20, 29, 0.4); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; }
+.plan-badge { background: rgba(255, 184, 0, 0.1); color: var(--gold-primary); padding: 8px 16px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(255, 184, 0, 0.2); font-size: 14px; }
+.plan-badge span { color: var(--text-muted); font-size: 12px; font-weight: normal; margin-inline-end: 8px; }
 
-/* القائمة المنسدلة للإعدادات */
-.settings-dropdown { position: absolute; top: 60px; inset-inline-end: 0; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 16px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; z-index: 100; }
-.user-profile:hover .settings-dropdown, .settings-dropdown:hover { opacity: 1; visibility: visible; transform: translateY(0); }
-.dropdown-item { padding: 12px 15px; color: var(--text-main); font-size: 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-.dropdown-item:hover { background: rgba(124, 58, 237, 0.2); color: #fff; }
-.dropdown-divider { height: 1px; background: var(--border-glass); margin: 8px 0; }
-.logout-btn { color: #ff4757; }
-.logout-btn:hover { background: rgba(255, 71, 87, 0.1); }
+/* إعدادات المستخدم في الأعلى */
+.user-dropdown-wrapper { position: relative; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+.user-dropdown-wrapper img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--violet-light); object-fit: cover; }
+.user-name-top { font-weight: 700; font-size: 15px; }
 
-/* === مساحة العمل (Home) === */
-main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
-.welcome-box { background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(0,0,0,0)); border: 1px solid var(--border-glass); padding: 30px; border-radius: 20px; }
+.settings-menu { position: absolute; top: 60px; inset-inline-end: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 10px; width: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; backdrop-filter: blur(15px); }
+.user-dropdown-wrapper:hover .settings-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+.settings-menu a { display: flex; align-items: center; gap: 10px; padding: 12px 15px; color: var(--text-main); font-size: 14px; border-radius: 8px; transition: 0.2s; }
+.settings-menu a:hover { background: rgba(124, 58, 237, 0.2); color: #fff; }
+.settings-divider { height: 1px; background: var(--border-glass); margin: 5px 0; }
+
+/* === محتوى الاستوديو === */
+.content-area { padding: 40px; display: flex; flex-direction: column; gap: 40px; }
+.welcome-box { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 30px; border-radius: 20px; text-align: center; }
 .welcome-box h1 { margin: 0 0 10px 0; font-size: 28px; }
-.welcome-box p { margin: 0; color: var(--text-muted); font-size: 16px; line-height: 1.6; }
+.welcome-box p { margin: 0; color: var(--text-muted); font-size: 16px; }
 
-/* للهواتف المحمولة */
+/* === قسم الاستفسارات المدمج === */
+#inquiries-section { background: rgba(18, 20, 29, 0.8); border: 1px solid var(--border-glass); padding: 30px; border-radius: 20px; scroll-margin-top: 100px; }
+.inquiries-header { font-size: 22px; font-weight: 900; margin-bottom: 20px; color: var(--gold-light); display: flex; align-items: center; gap: 10px; }
+.chat-box { background: rgba(0,0,0,0.3); height: 250px; border-radius: 16px; border: 1px inset var(--border-glass); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+.message-bot { background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); padding: 12px 16px; border-radius: 16px 16px 0 16px; width: fit-content; max-width: 80%; align-self: flex-end; }
+.chat-input-wrapper { display: flex; gap: 10px; }
+.chat-input-wrapper input { flex-grow: 1; padding: 15px 20px; border-radius: 12px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.5); color: #fff; font-family: inherit; outline: none; transition: 0.3s; }
+.chat-input-wrapper input:focus { border-color: var(--violet-light); }
+.chat-input-wrapper button { padding: 15px 25px; border-radius: 12px; background: var(--gradient-violet); color: #fff; border: none; font-weight: 900; cursor: pointer; font-family: inherit; transition: 0.3s; }
+.chat-input-wrapper button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124,58,237,0.4); }
+
 @media(max-width: 850px) {
   body { flex-direction: column; }
-  aside { width: 100%; height: auto; flex-direction: row; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-glass); border-inline-end: none; }
-  .nav-menu { display: none; } /* سيتم عمل قائمة جانبية للموبايل لاحقاً */
-  .brand { margin: 0; }
-  header { padding: 0 20px; height: 70px; }
-  .user-email { display: none; }
+  aside { width: 100%; height: auto; flex-direction: row; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-glass); border-inline-end: none; align-items: center; }
+  .nav-menu, .user-info { display: none; }
+  .brand { margin: 0; font-size: 18px; }
+  header { padding: 15px 20px; }
+  .content-area { padding: 20px; }
 }
 </style>
 </head>
@@ -78,52 +93,68 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
 
 <div class="bg-effects"><div class="grid-bg"></div></div>
 
+<!-- الشريط الجانبي (مطابق لباكيج والإشعارات) -->
 <aside>
   <div class="brand">Good<b>Vidify</b></div>
+  
   <div class="nav-menu">
-    <!-- الروابط تستدعي الصفحات المختلفة -->
-    <a href="dashboard.html" class="nav-btn active">🏠 الرئيسية (الاستوديو)</a>
-    <a href="use.html" class="nav-btn">📊 الاستخدام والرصيد</a>
-    <a href="#" class="nav-btn">💬 الاستفسارات</a>
+    <a href="dashboard.html" class="nav-btn active">🏠 الرئيسية</a>
+    <a href="use.html" class="nav-btn">📊 الاستخدام</a>
+    <a href="#inquiries-section" class="nav-btn">💬 الاستفسارات</a>
+    <a href="Notifications.html" class="nav-btn">🔔 الإشعارات</a>
     <a href="packages.html" class="nav-btn">💳 الباقات والشراء</a>
+  </div>
+
+  <div class="user-info">
+    <div id="aside-user-email">جاري التحميل...</div>
+    <button class="btn-logout" id="aside-btn-logout">تسجيل الخروج</button>
   </div>
 </aside>
 
-<div class="main-wrapper">
+<!-- منطقة المحتوى الرئيسية -->
+<main>
+  <!-- الشريط العلوي (الهيدر) -->
   <header>
-    <div class="header-title" id="top-plan-badge">جاري التحميل... <span>...</span></div>
+    <div class="plan-badge" id="top-plan-badge"><span>الخطة:</span> جاري التحميل...</div>
     
-    <div class="user-profile">
-      <div class="user-info">
-        <span class="user-name" id="ui-username">المستخدم</span>
-        <span class="user-email" id="ui-email">email@domain.com</span>
-      </div>
-      <img src="https://via.placeholder.com/150" alt="Profile" id="ui-avatar">
+    <div class="user-dropdown-wrapper">
+      <span class="user-name-top" id="top-username">المستخدم</span>
+      <img src="https://via.placeholder.com/150" alt="Profile" id="top-avatar">
       
-      <!-- قائمة الإعدادات المنسدلة -->
-      <div class="settings-dropdown">
-        <a href="#" class="dropdown-item">🌐 اللغة (عربي / English)</a>
-        <a href="#" class="dropdown-item">🎨 المظهر (داكن / فاتح)</a>
-        <a href="#" class="dropdown-item">🛠 خدماتنا (GOOD CODE)</a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item logout-btn" id="btn-logout">🚪 تسجيل الخروج</a>
+      <!-- القائمة المنسدلة للإعدادات -->
+      <div class="settings-menu">
+        <a href="#" onclick="alert('سيتم إضافة تغيير اللغة قريباً')">🌐 اللغة (عربي / English)</a>
+        <a href="#" onclick="alert('المظهر الداكن هو الافتراضي حالياً')">🎨 المظهر (داكن / فاتح)</a>
+        <a href="#" onclick="alert('خدمات GOOD CODE قيد البرمجة')">🛠 خدماتنا</a>
+        <div class="settings-divider"></div>
+        <a href="packages.html">💳 ترقية الباقة</a>
       </div>
     </div>
   </header>
 
-  <!-- مساحة العمل (Home) التي تظهر عند الضغط على الرئيسية -->
-  <main id="workspace">
-    <div class="welcome-box">
-      <h1 id="welcome-msg">مرحباً بك في استوديو الذكاء الاصطناعي</h1>
-      <p>هذه هي مساحة العمل الرئيسية (Home). هنا سنقوم لاحقاً بإضافة مربع إدخال النص السحري لاختيار اللغات، أبعاد الفيديو، ستايل الإخراج، وزر التوليد الذي سيبدأ بسحب الرصيد.</p>
-    </div>
+  <!-- مساحة العمل الداخلية -->
+  <div class="content-area">
     
-    <!-- يمكننا إضافة قسم "المشاريع السابقة" هنا لاحقاً -->
-    <div id="previous-chats" style="color: var(--text-muted);">
-      جاري تحميل مشاريعك السابقة...
+    <!-- قسم الترحيب (الاستوديو القادم) -->
+    <div class="welcome-box">
+      <h1 id="welcome-msg">مرحباً بك في الاستوديو السحري ✨</h1>
+      <p>جاري تجهيز مساحة العمل الخاصة بك... هنا سيظهر مربع إدخال النصوص وتوليد الفيديوهات قريباً.</p>
     </div>
-  </main>
-</div>
+
+    <!-- قسم الاستفسارات (مدمج في الداشبورد) -->
+    <div id="inquiries-section">
+      <div class="inquiries-header">💬 الاستفسارات والدعم الفني</div>
+      <div class="chat-box" id="chat-box">
+        <div class="message-bot">أهلاً بك في الدعم الفني لـ GoodVidify التابع لشركة GOOD CODE. كيف يمكنني مساعدتك اليوم؟</div>
+      </div>
+      <div class="chat-input-wrapper">
+        <input type="text" id="chat-input" placeholder="اكتب استفسارك هنا...">
+        <button onclick="sendInquiry()">إرسال</button>
+      </div>
+    </div>
+
+  </div>
+</main>
 
 <!-- ربط Firebase Auth و Realtime Database -->
 <script type="module">
@@ -145,11 +176,10 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // 1. دالة التحقق من الجهاز (منع الحسابات المتعددة المجانية)
+  // 1. دالة التحقق من الجهاز (منع الحسابات الوهمية)
   async function checkDeviceLimit(user) {
     let deviceId = localStorage.getItem('goodvidify_device_id');
     
-    // إذا لم يكن يملك بصمة جهاز، ننشئ له واحدة ونحفظها في المتصفح
     if (!deviceId) {
       deviceId = 'dev_' + Math.random().toString(36).substr(2, 16);
       localStorage.setItem('goodvidify_device_id', deviceId);
@@ -160,18 +190,12 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
 
     if (snap.exists()) {
       const registeredUid = snap.val().uid;
-      // إذا كان الجهاز مسجلاً مسبقاً لحساب آخر!
       if (registeredUid !== user.uid) {
-        console.warn("تحذير: تم اكتشاف استخدام جهاز مسجل بحساب آخر.");
-        // هنا يمكننا مستقبلاً وضع كود يمنعه من التوليد المجاني ويجبره على الشراء
+        console.warn("هذا الجهاز مرتبط بحساب آخر.");
         return "restricted"; 
       }
     } else {
-      // تسجيل هذا الجهاز باسم هذا المستخدم الجديد
-      await set(deviceRef, {
-        uid: user.uid,
-        firstLogin: new Date().toISOString()
-      });
+      await set(deviceRef, { uid: user.uid, firstLogin: new Date().toISOString() });
     }
     return "clean";
   }
@@ -179,23 +203,25 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
   // 2. مراقبة حالة تسجيل الدخول
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      // عرض بيانات المستخدم في الشريط العلوي
-      document.getElementById('ui-username').innerText = user.displayName || 'مستخدم GoodVidify';
-      document.getElementById('ui-email').innerText = user.email;
+      // تحديث بيانات المستخدم في الشريط الجانبي والعلوي
+      document.getElementById('aside-user-email').innerText = user.email;
+      const displayName = user.displayName || 'مبدع';
+      document.getElementById('top-username').innerText = displayName.split(' ')[0];
+      
       if (user.photoURL) {
-        document.getElementById('ui-avatar').src = user.photoURL;
+        document.getElementById('top-avatar').src = user.photoURL;
       }
       
-      document.getElementById('welcome-msg').innerText = `مرحباً بعودتك يا ${user.displayName ? user.displayName.split(' ')[0] : 'مبدع'}! ✨`;
+      document.getElementById('welcome-msg').innerText = `مرحباً بك يا ${displayName.split(' ')[0]} في الاستوديو ✨`;
 
-      // تشغيل فحص الجهاز
+      // فحص الجهاز
       const deviceStatus = await checkDeviceLimit(user);
 
-      // جلب خطة الاشتراك الحالية
+      // جلب خطة الاشتراك من Realtime Database
       const subRef = ref(db, 'users/' + user.uid + '/subscription');
       const snap = await get(subRef);
       
-      let currentPlanText = "الباقة التجريبية";
+      let currentPlanText = "التجريبية (مجاني)";
       
       if (snap.exists()) {
         const subData = snap.val();
@@ -203,38 +229,43 @@ main { flex-grow: 1; padding: 40px; overflow-y: auto; display: flex; flex-direct
         const expiry = new Date(subData.expiryDate);
 
         if (subData.status === 'active' && now < expiry) {
-          // يمكن ترجمة الكود الخاص بالباقة إلى اسم مقروء
           const plansNames = {
-            'basic_gen': 'الأساسية', 'pro_gen': 'برو', 'max_gen': 'برو ماكس',
-            'creator_auto': 'صانع المحتوى', 'pro_auto': 'الاحترافية', 'max_auto': 'بورماكس'
+            'basic_gen': 'الأساسية (توليد)', 'pro_gen': 'برو (توليد)', 'max_gen': 'برو ماكس (توليد)',
+            'creator_auto': 'صانع المحتوى (مونتاج)', 'pro_auto': 'الاحترافية (مونتاج)', 'max_auto': 'بورماكس (مونتاج)'
           };
           currentPlanText = plansNames[subData.activePlan] || subData.activePlan;
         }
       } else {
-        // إذا لم يشترك وهو على المجاني، والجهاز مقيد
         if (deviceStatus === "restricted") {
-          currentPlanText = "تنبيه: تم استنفاد الرصيد المجاني لهذا الجهاز";
+          currentPlanText = "مقيد (استنفدت الرصيد المجاني للجهاز)";
         }
       }
 
-      // تحديث شريط الحالة
-      document.getElementById('top-plan-badge').innerHTML = `لوحة التحكم <span>${currentPlanText}</span>`;
-
-      // هنا مستقبلاً سنقوم بجلب "مشاريع ودردشات" المستخدم من قاعدة البيانات وعرضها
+      // عرض الخطة في الشريط العلوي
+      document.getElementById('top-plan-badge').innerHTML = `<span>الخطة:</span> ${currentPlanText}`;
 
     } else {
-      // طرد المستخدم إذا لم يسجل الدخول
       window.location.href = "login.html";
     }
   });
 
   // 3. زر تسجيل الخروج
-  document.getElementById('btn-logout').addEventListener('click', (e) => {
+  document.getElementById('aside-btn-logout').addEventListener('click', (e) => {
     e.preventDefault();
-    signOut(auth).then(() => {
-      window.location.href = "login.html";
-    });
+    signOut(auth).then(() => { window.location.href = "login.html"; });
   });
+
+  // دالة وهمية مبدئية لزر إرسال الاستفسار
+  window.sendInquiry = function() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(text) {
+      const box = document.getElementById('chat-box');
+      box.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 16px 16px 16px 0; width: fit-content; max-width: 80%; border: 1px solid var(--border-glass); align-self: flex-start; color: var(--gold-light);">${text}</div>`;
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+    }
+  };
 </script>
 
 </body>
