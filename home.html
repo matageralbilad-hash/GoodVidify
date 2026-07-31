@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoodVidify — الاستوديو الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* الوضع الداكن (الافتراضي) */
+  --bg-dark: #090a0f;
+  --bg-card: rgba(18, 20, 29, 0.6);
+  --gold-primary: #FFB800;
+  --gold-light: #FFD700;
+  --violet-neon: #7C3AED;
+  --violet-light: #9D4EDD;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --gradient-gold: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  --gradient-violet: linear-gradient(135deg, var(--violet-light), var(--violet-neon));
+}
+
+/* الوضع الفاتح */
+[data-theme="light"] {
+  --bg-dark: #f0f2f5;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --border-glass: rgba(0, 0, 0, 0.1);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Tajawal', sans-serif; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+a { text-decoration: none; color: inherit; }
+
+/* === الخلفية === */
+.bg-effects { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.grid-bg { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(var(--text-main) 1px, transparent 1px), linear-gradient(90deg, var(--text-main) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at center, #000, transparent 80%); -webkit-mask-image: radial-gradient(ellipse at center, #000, transparent 80%); }
+
+/* === الشريط الجانبي === */
+aside { width: 260px; background: var(--bg-card); border-inline-end: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 24px; backdrop-filter: blur(20px); z-index: 10; transition: 0.3s; }
+.brand { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 40px; text-align: center; }
+.brand b { background: var(--gradient-gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nav-menu { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+.nav-btn { padding: 14px 20px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); text-align: start; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; font-family: inherit; }
+.nav-btn:hover { background: rgba(124, 58, 237, 0.05); color: var(--text-main); }
+.nav-btn.active { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.3); color: var(--violet-light); box-shadow: inset 0 0 20px rgba(124, 58, 237, 0.05); }
+
+/* === المنطقة الرئيسية === */
+main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* الشريط العلوي (Top Bar) */
+.top-bar { display: flex; justify-content: flex-end; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-glass); background: var(--bg-card); backdrop-filter: blur(10px); z-index: 5; }
+.profile-menu { position: relative; }
+.profile-btn { display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid var(--border-glass); padding: 6px 16px 6px 6px; border-radius: 999px; cursor: pointer; color: var(--text-main); font-family: inherit; font-weight: 700; transition: 0.3s; }
+.profile-btn:hover { background: rgba(124, 58, 237, 0.1); border-color: var(--violet-light); }
+.profile-pic { width: 36px; height: 36px; border-radius: 50%; background: var(--gradient-gold); display: grid; place-items: center; color: #000; font-weight: 900; font-size: 14px; }
+.dropdown-content { display: none; position: absolute; top: 110%; inset-inline-end: 0; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; min-width: 220px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px); }
+.dropdown-content.show { display: block; animation: dropIn 0.2s ease-out; }
+@keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.dropdown-item { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; color: var(--text-main); font-size: 14px; border-bottom: 1px solid var(--border-glass); cursor: pointer; transition: 0.3s; }
+.dropdown-item:hover { background: rgba(124, 58, 237, 0.1); color: var(--violet-light); }
+.dropdown-item:last-child { border-bottom: none; color: #ff5f56; }
+.dropdown-item:last-child:hover { background: rgba(255, 95, 86, 0.1); color: #ff5f56; }
+
+/* منطقة الاستوديو والمحادثة */
+.studio-container { padding: 40px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+.studio-header { text-align: center; margin-bottom: 40px; }
+.studio-header h1 { margin: 0 0 10px; font-size: 32px; font-weight: 900; }
+.studio-header p { margin: 0; color: var(--text-muted); font-size: 16px; }
+
+/* مفتاح المحركات */
+.engine-toggle { display: flex; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: 16px; padding: 6px; margin-bottom: 20px; width: 100%; max-width: 600px; }
+[data-theme="light"] .engine-toggle { background: rgba(0,0,0,0.05); }
+.engine-btn { flex: 1; padding: 14px; border-radius: 12px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.engine-btn small { font-size: 11px; font-weight: normal; opacity: 0.7; }
+.engine-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-glass); }
+.engine-btn.active.gen { border-bottom: 2px solid var(--gold-primary); }
+.engine-btn.active.auto { border-bottom: 2px solid var(--violet-neon); }
+
+/* صندوق الـ Prompt */
+.prompt-box { width: 100%; max-width: 800px; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 24px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); transition: 0.3s; backdrop-filter: blur(10px); }
+.prompt-box:focus-within { border-color: var(--violet-light); box-shadow: 0 20px 50px rgba(124, 58, 237, 0.15); }
+.prompt-textarea { width: 100%; min-height: 100px; background: transparent; border: none; color: var(--text-main); font-family: inherit; font-size: 16px; resize: none; outline: none; line-height: 1.6; }
+.prompt-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid var(--border-glass); padding-top: 15px; }
+.btn-attach { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.btn-attach:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+.btn-send { background: var(--gradient-violet); color: #fff; border: none; padding: 10px 30px; border-radius: 12px; font-family: inherit; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4); display: flex; align-items: center; gap: 8px; }
+.btn-send:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(124, 58, 237, 0.6); }
+
+/* === الأسئلة التفاعلية (تظهر بعد الإرسال) === */
+.questions-container { display: none; width: 100%; max-width: 800px; margin-top: 30px; animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.q-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 30px; margin-bottom: 20px; backdrop-filter: blur(10px); border-right: 4px solid var(--gold-primary); }
+.q-title { font-size: 18px; font-weight: 900; margin: 0 0 20px; color: var(--gold-light); display: flex; align-items: center; gap: 10px; }
+.q-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group label { font-size: 13px; color: var(--text-muted); font-weight: 700; }
+.form-group select, .form-group input { padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); color: var(--text-main); font-family: inherit; outline: none; transition: 0.3s; }
+.form-group select:focus, .form-group input:focus { border-color: var(--violet-light); }
+[data-theme="light"] .form-group select, [data-theme="light"] .form-group input { background: rgba(255,255,255,0.5); }
+
+/* === شاشة الحماس والرندر (Hype Screen) === */
+.hype-screen { display: none; width: 100%; max-width: 800px; text-align: center; margin-top: 40px; animation: fadeInUp 0.5s ease-out; }
+.hype-video { width: 100%; border-radius: 24px; overflow: hidden; border: 1px solid var(--border-glass); box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; aspect-ratio: 16/9; background: #000; display: grid; place-items: center; }
+.pulse-circle { width: 80px; height: 80px; background: var(--violet-neon); border-radius: 50%; animation: pulse 2s infinite; display: grid; place-items: center; font-size: 30px; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7); } 70% { box-shadow: 0 0 0 30px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+.status-text { font-size: 18px; font-weight: 700; margin-top: 20px; color: var(--violet-light); }
+.progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 999px; margin-top: 15px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: var(--gradient-violet); transition: width 0.5s ease; }
+</style>
+</head>
+<body>
+
+<div class="bg-effects"><div class="grid-bg"></div></div>
+
+<!-- الشريط الجانبي الثابت -->
+<aside>
+  <div class="brand">Good<b>Vidify</b></div>
+  <div class="nav-menu">
+    <a href="home.html" class="nav-btn active">🏠 الرئيسية</a>
+    <a href="use.html" class="nav-btn">📊 الاستخدام</a>
+    <a href="inquiries.html" class="nav-btn">💬 الاستفسارات</a>
+    <a href="Notifications.html" class="nav-btn">🔔 الإشعارات</a>
+    <a href="packages.html" class="nav-btn">💳 الباقات والشراء</a>
+  </div>
+</aside>
+
+<main>
+  <!-- الشريط العلوي والتمرير الذكي -->
+  <div class="top-bar">
+    <div class="profile-menu">
+      <button class="profile-btn" onclick="toggleDropdown()">
+        <span id="user-name-display">المستخدم</span>
+        <div class="profile-pic" id="user-initial">م</div>
+      </button>
+      
+      <div class="dropdown-content" id="profile-dropdown">
+        <div class="dropdown-item" onclick="window.location.href='use.html'">
+          <span>👤 الملف الشخصي (Portfolio)</span>
+        </div>
+        <div class="dropdown-item">
+          <span>⏳ الرصيد المتبقي:</span>
+          <span style="color: var(--gold-primary); font-weight: 900;">20 دقيقة</span>
+        </div>
+        <div class="dropdown-item" onclick="toggleTheme()">
+          <span>🎨 المظهر (داكن/فاتح)</span>
+          <span id="theme-icon">🌙</span>
+        </div>
+        <div class="dropdown-item">
+          <span>🌐 اللغة</span>
+          <span>العربية 🇸🇦</span>
+        </div>
+        <div class="dropdown-item" onclick="alert('سيتم توجيهك لصفحة السياسة')">
+          <span>📜 سياسة الاستخدام</span>
+        </div>
+        <div class="dropdown-item" id="btn-logout">
+          <span>🚪 تسجيل الخروج</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- منطقة العمل الرئيسية -->
+  <div class="studio-container" id="step-1">
+    <div class="studio-header">
+      <h1>ماذا سنصنع اليوم؟ ✨</h1>
+      <p>اكتب فكرتك، وسيقوم المخرج الذكي بتحويلها إلى واقع.</p>
+    </div>
+
+    <!-- اختيار القسم -->
+    <div class="engine-toggle">
+      <button class="engine-btn active gen" onclick="selectEngine('gen')" id="btn-gen">
+        🐉 قسم التوليد الخيالي
+        <small>رسم وتوليد مشاهد من الصفر (بكسل ببكسل)</small>
+      </button>
+      <button class="engine-btn auto" onclick="selectEngine('auto')" id="btn-auto">
+        🎬 قسم المونتاج الوثائقي
+        <small>كتابة، تعليق صوتي، ودمج مقاطع جاهزة آلياً</small>
+      </button>
+    </div>
+
+    <!-- صندوق الإدخال -->
+    <div class="prompt-box">
+      <textarea class="prompt-textarea" id="main-prompt" placeholder="اكتب فكرتك هنا بالتفصيل... (مثال: تنين ضخم يحلق فوق مباني مدينة صنعاء القديمة وقت الغروب)"></textarea>
+      <div class="prompt-actions">
+        <button class="btn-attach" onclick="alert('ميزة إرفاق الصور وملفات PDF ستتوفر قريباً!')">📎 إرفاق ملف / صورة</button>
+        <button class="btn-send" onclick="startDirector()">إرسال للمخرج 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- الأسئلة التفاعلية (المرحلة 2) -->
+  <div class="studio-container questions-container" id="step-2">
+    <div class="studio-header">
+      <h1>المخرج يضع لمساته 🎬</h1>
+      <p>أجب عن هذه الأسئلة التقنية لضبط جودة الإخراج النهائي.</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-title">⚙️ الإعدادات التقنية (الثابتة)</div>
+      <div class="q-grid">
+        <div class="form-group">
+          <label>1. زاوية الكاميرا</label>
+          <select id="q-angle">
+            <option>سينمائية (Cinematic)</option>
+            <option>طائرة درون (Drone View)</option>
+            <option>قريبة جداً (Macro)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>2. الدقة (حسب باقتك)</label>
+          <select id="q-res">
+            <option>1080p (عالية)</option>
+            <option disabled>4K (تتطلب ترقية الباقة)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>3. الأبعاد والصيغة</label>
+          <select id="q-ratio">
+            <option>16:9 (يوتيوب وشاشات)</option>
+            <option>9:16 (ريلز وتيك توك)</option>
+            <option>1:1 (انستجرام)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>4. النمط / الجو العام</label>
+          <select id="q-style">
+            <option>واقعي جداً (Photorealistic)</option>
+            <option>إضاءة نيون ليلي (Cyberpunk)</option>
+            <option>أنمي (Anime Style)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- الأسئلة المستخرجة من Gemini (الديناميكية) -->
+    <div class="q-card" style="border-right-color: var(--violet-neon);">
+      <div class="q-title">🧠 أسئلة المخرج الذكي (مستخرجة من فكرتك)</div>
+      <div class="q-grid">
+        <div class="form-group">
+          <label>5. ما هو لون التنين الذي تتخيله؟</label>
+          <input type="text" placeholder="مثال: أحمر ناري...">
+        </div>
+        <div class="form-group">
+          <label>6. هل تريده يطير ببطء أم ينقض بسرعة؟</label>
+          <input type="text" placeholder="أجب هنا...">
+        </div>
+        <div class="form-group">
+          <label>7. هل هناك حركة في الشارع بالأسفل؟</label>
+          <input type="text" placeholder="أجب هنا...">
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <button class="btn-send" style="padding: 15px 50px; font-size: 18px;" onclick="startRendering()">بدء التصنيع والدمج ✦</button>
+    </div>
+  </div>
+
+  <!-- شاشة الرندر والحماس (المرحلة 3) -->
+  <div class="studio-container hype-screen" id="step-3">
+    <div class="studio-header">
+      <h1>جاري صناعة السحر... ☁️</h1>
+      <p>يمكنك البقاء ومشاهدة هذا العرض، أو إغلاق الصفحة والعودة لاحقاً وستجد الفيديو في رصيدك.</p>
+    </div>
+
+    <div class="hype-video">
+      <div class="pulse-circle">🎬</div>
+      <!-- هنا يمكن لاحقاً وضع iframe لفيديو ترويجي أو قصة نجاح -->
+    </div>
+
+    <div class="status-text" id="render-status">جاري الاتصال بالسيرفرات السحابية...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="render-progress"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // 1. التعامل مع القائمة المنسدلة (Dropdown)
+  function toggleDropdown() {
+    document.getElementById('profile-dropdown').classList.toggle('show');
+  }
+  // إغلاق القائمة عند النقر خارجها
+  window.onclick = function(event) {
+    if (!event.target.closest('.profile-btn')) {
+      const dropdowns = document.getElementsByClassName("dropdown-content");
+      for (let i = 0; i < dropdowns.length; i++) {
+        if (dropdowns[i].classList.contains('show')) {
+          dropdowns[i].classList.remove('show');
+        }
+      }
+    }
+  }
+
+  // 2. التعامل مع المظهر (داكن/فاتح)
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const icon = document.getElementById('theme-icon');
+    
+    if (currentTheme === 'light') {
+      html.removeAttribute('data-theme');
+      icon.innerText = '🌙';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      icon.innerText = '☀️';
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  // استرجاع المظهر المحفوظ
+  if (localStorage.getItem('theme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('theme-icon').innerText = '☀️';
+  }
+
+  // 3. اختيار المحرك (التوليد / المونتاج)
+  let currentEngine = 'gen';
+  function selectEngine(type) {
+    currentEngine = type;
+    document.getElementById('btn-gen').classList.remove('active');
+    document.getElementById('btn-auto').classList.remove('active');
+    
+    if (type === 'gen') {
+      document.getElementById('btn-gen').classList.add('active');
+    } else {
+      document.getElementById('btn-auto').classList.add('active');
+    }
+  }
+
+  // 4. إرسال الطلب وإظهار الأسئلة الـ 7
+  function startDirector() {
+    const prompt = document.getElementById('main-prompt').value.trim();
+    if (!prompt) {
+      alert("أرجوك.. اكتب فكرتك أولاً قبل إرسالها للمخرج!");
+      return;
+    }
+    
+    // إخفاء المرحلة الأولى وإظهار الثانية
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'block';
+  }
+
+  // 5. شاشة الرندر والحماس (المحاكاة)
+  function startRendering() {
+    // إخفاء الأسئلة وإظهار شاشة الحماس
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'block';
+
+    const statuses = [
+      "جاري تحليل المشهد وتجهيز واجهات الذكاء الاصطناعي...",
+      "جاري توليد التفاصيل البصرية الدقيقة...",
+      "جاري معالجة الإضاءة والزوايا...",
+      "المرحلة الأخيرة: دمج ورندر الفيديو بدقة عالية...",
+      "تم الإنجاز! الفيديو جاهز."
+    ];
+    
+    let progress = 0;
+    const progressFill = document.getElementById('render-progress');
+    const statusText = document.getElementById('render-status');
+    let statusIndex = 0;
+
+    const interval = setInterval(() => {
+      progress += 5;
+      progressFill.style.width = progress + '%';
+      
+      if (progress % 25 === 0 && statusIndex < statuses.length - 1) {
+        statusIndex++;
+        statusText.innerText = statuses[statusIndex];
+      }
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        statusText.innerText = "✅ تمت صناعة الفيديو بنجاح! جاري تحويلك...";
+        statusText.style.color = "#2ed573";
+        // توجيه المستخدم لصفحة "الاستخدام" بعد ثانيتين
+        setTimeout(() => {
+          window.location.href = 'use.html';
+        }, 2000);
+      }
+    }, 500); // سرعة وهمية للرندر لأغراض العرض
+  }
+</script>
+
+</body>
+</html>
